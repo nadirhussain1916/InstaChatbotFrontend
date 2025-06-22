@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Paper, Grid, Avatar, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Grid, Avatar, useMediaQuery, useTheme } from '@mui/material';
 import InstagramPost from './InstagramPost';
 import { TrendingUp } from '@mui/icons-material';
 import { useGetUserPostQuery } from '@/services/private/post';
@@ -7,6 +7,8 @@ import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLo
 
 function InstagramPostsList() {
   const { data: mockInstagramPosts = [], isLoading } = useGetUserPostQuery();
+  const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Calculate total likes and comments
   const totalLikes = mockInstagramPosts.reduce((sum, post) => sum + (post.likes || 0), 0);
@@ -19,9 +21,9 @@ function InstagramPostsList() {
 
   return (
     <Box sx={{ bgcolor: '#f9fafb', borderRight: '1px solid #e5e7eb', height: '100%', overflowY: 'auto' }}>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: !isMobile ? 3 : 5  }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, }}>
           <Avatar
             sx={{
               width: 40,

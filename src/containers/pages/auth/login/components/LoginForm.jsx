@@ -37,7 +37,7 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Password is required'),
 });
 
-function LoginPage({ isOpen, onClose }) {
+function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [login] = useLoginMutation();
   const navigate = useNavigate();
@@ -51,7 +51,6 @@ function LoginPage({ isOpen, onClose }) {
     setLoading(true);
 
     const loginResp = await login({ ...values });
-    console.log(loginResp);
 
     if (loginResp?.data) {
       dispatch(onLoggedIn(loginResp?.data));
@@ -69,166 +68,176 @@ function LoginPage({ isOpen, onClose }) {
   };
 
   return (
-    <Dialog fullScreen open={isOpen} onClose={onClose}>
+    <div
+      className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3 p-4"
+      style={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div
-        className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3 p-4"
+        className="bg-white rounded-4 shadow w-100"
         style={{
-          backgroundImage: `url(${image})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          maxWidth: '28rem',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
         <div
-          className="bg-white rounded-4 shadow w-100"
           style={{
-            maxWidth: '28rem',
-            position: 'relative',
-            overflow: 'hidden',
+            height: '8px',
+            background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+          }}
+        ></div>
+
+        <DialogContent
+          sx={{
+            backgroundColor: '#fff',
+            minHeight: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 4,
           }}
         >
-          <div
-            style={{
-              height: '8px',
-              background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-            }}
-          ></div>
-
-          <DialogContent
+          <Avatar
             sx={{
-              backgroundColor: '#fff',
-              minHeight: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: 4,
+              background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+              mb: 2,
+              height: '65px',
+              width: '65px',
             }}
           >
-            <IconButton onClick={onClose} sx={{ position: 'absolute', top: 16, right: 16 }}>
-              <CloseIcon />
-            </IconButton>
+            <PersonOutlineRounded sx={{ fontSize: 32 }} />
+          </Avatar>
 
-            <Avatar
-              sx={{
-                background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                mb: 2,
-                height: '65px',
-                width: '65px',
-              }}
-            >
-              <PersonOutlineRounded sx={{ fontSize: 32 }} />
-            </Avatar>
+          <Typography variant="h5" fontWeight={600} mb={3}>
+            Get Started
+          </Typography>
 
-            <Typography variant="h5" fontWeight={600} mb={3}>
-              Welcome Back
-            </Typography>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              touched,
+              errors,
+              isSubmitting,
+            }) => (
+              <Form style={{ width: '100%', maxWidth: 400 }}>
+                <TextField
+                  fullWidth
+                  placeholder="instagram Username"
+                  name="username"
+                  value={values.username}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonOutlineRounded />
+                      </InputAdornment>
+                    ),
+                  }}
+                  variant="outlined"
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#a855f7', // default border color
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#ec4899', // border color on hover
+                    },
+                    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#fb923c', // border color on focus
+                    },
+                  }}
+                />
 
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({
-                values,
-                handleChange,
-                handleBlur,
-                touched,
-                errors,
-                isSubmitting,
-              }) => (
-                <Form style={{ width: '100%', maxWidth: 400 }}>
-                  <TextField
-                    fullWidth
-                    placeholder="Username"
-                    name="username"
-                    value={values.username}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.username && Boolean(errors.username)}
-                    helperText={touched.username && errors.username}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PersonOutlineRounded />
-                        </InputAdornment>
-                      ),
-                    }}
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                  />
+                <TextField
+                  fullWidth
+                  placeholder="insta Password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockIcon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(prev => !prev)} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  variant="outlined"
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#a855f7', // default border color
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#ec4899', // border color on hover
+                    },
+                    '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#fb923c', // border color on focus
+                    },
+                  }}
+                />
 
-                  <TextField
-                    fullWidth
-                    placeholder="Password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={() => setShowPassword(prev => !prev)} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                  />
-
-                  {error && (
-                    <Typography variant="body2" color="error" mb={1}>
-                      {error}
-                    </Typography>
-                  )}
-
-                  <Button
-                    fullWidth
-                    size="large"
-                    variant="contained"
-                    type="submit"
-                    disabled={loading || isSubmitting}
-                    sx={{
-                      mb: 2,
-                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    }}
-                  >
-                    {isSubmitting || loading ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CircularProgress size={20} color="inherit" />
-                        Logging in...
-                      </Box>
-                    ) : (
-                      'Login'
-                    )}
-                  </Button>
-
-                  <Typography
-                    variant="caption"
-                    color="textSecondary"
-                    align="center"
-                    display="block"
-                    mt={1}
-                  >
-                    Demo: demo / password123
+                {error && (
+                  <Typography variant="body2" color="error" mb={1}>
+                    {error}
                   </Typography>
-                </Form>
-              )}
-            </Formik>
-          </DialogContent>
-        </div>
+                )}
+
+                <Button
+                  fullWidth
+                  size="large"
+                  variant="contained"
+                  type="submit"
+                  disabled={loading || isSubmitting}
+                  sx={{
+                    mb: 2,
+                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    },
+                  }}
+
+                >
+                  {isSubmitting || loading ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={20} color="inherit" />
+                      Logging in...
+                    </Box>
+                  ) : (
+                    'Login'
+                  )}
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
       </div>
-    </Dialog>
+    </div >
   );
 }
 
