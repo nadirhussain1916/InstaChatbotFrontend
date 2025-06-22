@@ -238,7 +238,7 @@ function ChatInterface() {
             p: 4,
             borderRadius: 2,
             boxShadow: 24,
-            width: 420,
+            width: !isMobile ? 450 : 320,
             mx: 'auto',
             mt: '10%',
           }}
