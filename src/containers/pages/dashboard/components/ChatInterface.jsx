@@ -49,7 +49,7 @@ function ChatInterface() {
   const [openModal, setOpenModal] = useState(false);
   const [numSlides, setNumSlides] = useState('');
   const [inspiration, setInspiration] = useState('');
-  const [selectinspiration, setSelectInspiration] = useState('');
+  const [selectInspiration, setSelectInspiration] = useState('Post');
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => setOpenModal(false);
   const handleAvatarClick = e => setAnchorEl(e.currentTarget);
@@ -58,6 +58,8 @@ function ChatInterface() {
     handleLogout();
     handleMenuClose();
   };
+  console.log(numSlides);
+  
   const handleSubmit = async (values, { resetForm }) => {
     const timestamp = new Date().toLocaleTimeString();
     const userMessage = { id: Date.now(), content: values.description, type: 'user', timestamp };
@@ -70,10 +72,7 @@ function ChatInterface() {
         ...values,
         content_type: contentType,
         num_slides: numSlides || null,
-        inspiration: {
-          instagram_post: selectinspiration === 'Post' ? inspiration : '',
-          instagram_link: selectinspiration === 'PostLink' ? inspiration : '',
-        },
+        inspiration: inspiration
       };
       const response = await createChat(payload).unwrap();
 
@@ -108,7 +107,7 @@ function ChatInterface() {
         borderBottom="1px solid #e0e0e0"
       >
         <Box display="flex" gap={2}>
-          {['Humble', 'Image', 'Video'].map(type => (
+          {['Humble', 'Origin', 'Product'].map(type => (
             <Button
               key={type}
               onClick={() => setContentType(type)}
@@ -268,31 +267,55 @@ function ChatInterface() {
           <FormLabel sx={{ mb: 1 }}>Select Inspiration:</FormLabel>
           <RadioGroup
             row
-            value={selectinspiration}
+            value={selectInspiration}
             onChange={e => setSelectInspiration(e.target.value)}
             sx={{ mb: 3 }}
           >
-            <FormControlLabel value="Post" control={<Radio />} label="Instagram Post" />
-            <FormControlLabel value="PostLink" control={<Radio />} label="Instagram Post Link" />
-            <TextField
-              fullWidth
-              label="Inspiration"
-              variant="outlined"
-              value={inspiration}
-              onChange={e => setInspiration(e.target.value)}
-              sx={{
-                mb: 3,
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#a855f7', // default border color
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#ec4899', // border color on hover
-                },
-                '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#fb923c', // border color on focus
-                },
-              }}
-            />
+            <FormControlLabel value="Post" control={<Radio />} label="Instagram Post Link" />
+            <FormControlLabel value="email" control={<Radio />} label="Email Content" />
+            {selectInspiration === 'Post' && (
+              <TextField
+                fullWidth
+                label="Past link here"
+                variant="outlined"
+                value={inspiration}
+                onChange={e => setInspiration(e.target.value)}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#a855f7', // default border color
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#ec4899', // border color on hover
+                  },
+                  '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#fb923c', // border color on focus
+                  },
+                }}
+              />
+            )}
+            {selectInspiration === 'email' && (
+              <TextField
+                multiline
+                fullWidth
+                label="Past Email Content "
+                variant="outlined"
+                value={inspiration}
+                onChange={e => setInspiration(e.target.value)}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#a855f7', // default border color
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#ec4899', // border color on hover
+                  },
+                  '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#fb923c', // border color on focus
+                  },
+                }}
+              />
+            )}
           </RadioGroup>
 
           <Box display="flex" justifyContent="flex-end" gap={2}>
