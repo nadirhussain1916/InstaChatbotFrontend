@@ -58,8 +58,7 @@ function ChatInterface() {
     handleLogout();
     handleMenuClose();
   };
-  console.log(numSlides);
-  
+
   const handleSubmit = async (values, { resetForm }) => {
     const timestamp = new Date().toLocaleTimeString();
     const userMessage = { id: Date.now(), content: values.description, type: 'user', timestamp };
