@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Card, CardMedia, CardContent } from '@mui/material';
 import { CalendarMonth, FavoriteBorder, Message } from '@mui/icons-material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import dayjs from 'dayjs';
 import { API_URL } from '@/utilities/constants';
 
@@ -25,18 +26,15 @@ function InstagramPost({ post }) {
                     <>
                         <CardMedia
                             component="video"
-                            src={`${API_URL}${post?.thumbnail_url}`}
-                            alt=''
+                            src={`${API_URL}${post?.thumbnail_url}`} // Ensure this is a valid image thumbnail, not the actual video
+                            alt=""
                             sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            controls={false}
-                            autoPlay={false}
-                            muted
                         />
                         <Box
                             sx={{
                                 position: 'absolute',
                                 inset: 0,
-                                bgcolor: 'rgba(0, 0, 0, 0.2)',
+                                bgcolor: 'rgba(0, 0, 0, 0.3)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -44,30 +42,16 @@ function InstagramPost({ post }) {
                         >
                             <Box
                                 sx={{
-                                    width: 48,
-                                    height: 48,
-                                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                                    width: 60,
+                                    height: 60,
+                                    bgcolor: 'rgba(255, 255, 255, 0.9)',
                                     borderRadius: '50%',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 }}
                             >
-                                {/* Pause icon */}
-                                <Box
-                                    sx={{
-                                        width: 18,
-                                        height: 18,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect x="3" y="3" width="4" height="12" rx="1" fill="#1f2937" />
-                                        <rect x="11" y="3" width="4" height="12" rx="1" fill="#1f2937" />
-                                    </svg>
-                                </Box>
+                                <PlayArrowIcon sx={{ color: '#1f2937', fontSize: 36 }} />
                             </Box>
                         </Box>
                     </>

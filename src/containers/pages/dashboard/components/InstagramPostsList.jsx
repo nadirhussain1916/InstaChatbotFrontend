@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import {
   Box,
@@ -8,6 +9,9 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  Stack,
+  styled,
+  Switch,
 } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +21,7 @@ import { useGetUserPostQuery } from '@/services/private/post';
 import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLoader';
 import { useGetPreviousChatQuery } from '@/services/private/chat';
 import { truncateMessage } from '@/utilities/helpers';
+import { Opacity } from '@mui/icons-material';
 
 function InstagramPostsList() {
   const { data: mockInstagramPosts = [], isLoading } = useGetUserPostQuery();
@@ -31,6 +36,87 @@ function InstagramPostsList() {
   const totalComments = mockInstagramPosts.reduce((sum, post) => sum + (post.comments || 0), 0);
 
   const handleClickNewChat = () => navigate('/');
+const AntSwitch = styled(Switch)(({ theme }) => ({
+  width: 220,
+  height: 50,
+  padding: 0,
+  display: 'flex',
+  position: 'relative',
+
+  '& .MuiSwitch-switchBase': {
+    padding: 4,
+    position: 'absolute',
+    top: '50%',
+    left: 4,
+    transform: 'translateY(-50%)',
+    zIndex: 2,
+    transition: theme.transitions.create(['transform'], {
+      duration: 300,
+    }),
+
+    '&.Mui-checked': {
+      transform: 'translate(166px, -50%)',
+      color: '#fff',
+      '& + .MuiSwitch-track': {
+        background: 'linear-gradient(to right, #ec4899, #f97316)', // ✅ Correct gradient
+        opacity: 1, // ✅ Correct casing
+        '&::before': {
+          display: 'none',
+        },
+        '&::after': {
+          display: 'block',
+        },
+      },
+    },
+  },
+
+  '& .MuiSwitch-thumb': {
+    width: 42,
+    height: 42,
+    borderRadius: '50%',
+    backgroundColor: '#fff',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+  },
+
+  '& .MuiSwitch-track': {
+    background: 'linear-gradient(to right, #ec4899, #f97316)',
+     opacity: 1,
+    borderRadius: 25,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 600,
+    fontSize: 16,
+    color: '#fff',
+    transition: theme.transitions.create(['background-color'], {
+      duration: 300,
+    }),
+
+    '&::before, &::after': {
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      fontSize: 16,
+      fontWeight: 600,
+      color: '#fff',
+    },
+
+    '&::before': {
+      content: '"Chat"',
+      right: 24,
+      display: 'block',
+    },
+
+    '&::after': {
+      content: '"Posts"',
+      left: 24,
+      display: 'none',
+    },
+  },
+}));
 
   return (
     <Box
@@ -43,42 +129,14 @@ function InstagramPostsList() {
       }}
     >
       {/* Toggle Section */}
-      <Box sx={{ p: isMobile ? 2 : 3 }}>
+      <Box sx={{ p: isMobile ? 1 : 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 3 }}>
-          <Typography
-            onClick={() => setView('posts')}
-            sx={{
-              cursor: 'pointer',
-              fontWeight: view === 'posts' ? 700 : 500,
-              color: view === 'posts' ? 'primary.main' : 'text.secondary',
-              fontSize: '1rem',
-            }}
-          >
-            Posts
-          </Typography>
-
-          <IconButton
-            onClick={() => setView(view === 'posts' ? 'chat' : 'posts')}
-            sx={{
-              backgroundColor: '#e5e7eb',
-              color: '#6b7280',
-              '&:hover': { backgroundColor: '#d1d5db' },
-            }}
-          >
-            <SwapHorizIcon />
-          </IconButton>
-
-          <Typography
-            onClick={() => setView('chat')}
-            sx={{
-              cursor: 'pointer',
-              fontWeight: view === 'chat' ? 700 : 500,
-              color: view === 'chat' ? 'primary.main' : 'text.secondary',
-              fontSize: '1rem',
-            }}
-          >
-            Chat List
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+            <AntSwitch
+              checked={view === 'chat'}
+              onChange={e => setView(e.target.checked ? 'chat' : 'posts')}
+            />
+          </Stack>
         </Box>
       </Box>
 
@@ -112,77 +170,48 @@ function InstagramPostsList() {
         ) : view === 'posts' ? (
           <>
             {/* Posts List */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {mockInstagramPosts.map((post, index) => (
-                <Box key={post.id} sx={{ position: 'relative' }}>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: -8,
-                      left: -8,
-                      zIndex: 10,
-                      width: 24,
-                      height: 24,
-                      borderRadius: '50%',
-                      background: 'linear-gradient(to right, #ec4899, #f97316)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
+            {mockInstagramPosts.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Typography variant="body1" color="text.secondary" fontWeight={500}>
+                  No top post available
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
+                {mockInstagramPosts.map((post, index) => (
+                  <Box key={post.id} sx={{ position: 'relative' }}>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -8,
+                        left: -8,
+                        zIndex: 10,
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(to right, #ec4899, #f97316)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      {index + 1}
-                    </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
+                      >
+                        {index + 1}
+                      </Typography>
+                    </Box>
+                    <InstagramPost post={post} />
                   </Box>
-                  <InstagramPost post={post} />
-                </Box>
-              ))}
-            </Box>
-
-            {/* Summary */}
-            <Paper
-              elevation={0}
-              sx={{
-                mt: 4,
-                p: 2,
-                bgcolor: '#fff',
-                borderRadius: 3,
-                border: '1px solid #f3f4f6',
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 500, color: 'text.primary', mb: 1 }}
-              >
-                Performance Summary
-              </Typography>
-              <Grid container spacing={2} textAlign="center">
-                <Grid item xs={6}>
-                  <Typography sx={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#ec4899' }}>
-                    {formatNumber(totalLikes)}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    Total Likes
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography sx={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                    {formatNumber(totalComments)}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    Total Comments
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
+                ))}
+              </Box>
+            )}
           </>
         ) : (
           <>
             {/* Chat List */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 3 }}>
               <Button
                 onClick={handleClickNewChat}
                 variant="contained"
@@ -203,7 +232,6 @@ function InstagramPostsList() {
               >
                 + New Chat
               </Button>
-
               {previousChat.map((chat, index) => (
                 <Box
                   key={index}

@@ -121,7 +121,7 @@ function ChatInterface() {
           </Menu>
           {!isMobile && (
             <Chip
-              label={truncateUserName(data?.full_name)}
+              label={truncateUserName(data?.full_name || data?.username)}
               sx={{
                 color: 'primary.main',
                 fontWeight: 600,

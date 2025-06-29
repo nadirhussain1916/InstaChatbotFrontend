@@ -58,7 +58,7 @@ export default function Question() {
   const [currentStep, setCurrentStep] = useState(0);
   const questionsPerStep = 3;
   const totalSteps = Math.ceil(data.length / questionsPerStep);
-  const [submitQuestion] = useAddQuestionMutation();
+  const [submitQuestion, {isLoading:loading}] = useAddQuestionMutation();
   const navigate = useNavigate();
 
   const handleAnswerChange = (questionId, value) => {
@@ -76,19 +76,16 @@ export default function Question() {
 
   const handleNext = () => setCurrentStep(prev => prev + 1);
   const handleSubmit = async () => {
-    const payload = {
-      answers: data.map(q => ({
-        question: q.id,
-        answer: answers[q.id] || "",
-      })),
-    };
-    const resp = await submitQuestion(payload);
-    console.log('submitQuestion response:', resp);
-
-    if (resp?.data) {
-      navigate('/');
-    }
+  const payload = {
+    answers: data.map(q => ({
+      question: q.id,
+      answer: answers[q.id] || "",
+    })),
   };
+    await submitQuestion(payload).unwrap();
+      navigate('/');
+
+};
 
   return (
     <div
@@ -136,11 +133,11 @@ export default function Question() {
 
   <Box mt={2} display="flex" alignItems="center" justifyContent="flex-end">
     <Button
-
       sx={{ cursor: "pointer", color: "black", fontWeight: 600 }}
       onClick={isLastStep ? handleSubmit : handleNext}
+      disabled={loading}
     >
-      {isLastStep ? "Submit" : "Next"}
+      {loading ? 'Submitting...' : isLastStep ? "Submit" : "Next"}
     </Button>
   </Box>
       </Box >

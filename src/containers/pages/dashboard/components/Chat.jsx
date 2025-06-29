@@ -75,7 +75,7 @@ function Chat() {
                     </Menu>
                     {!isMobile && (
                         <Chip
-                            label={truncateUserName(data?.full_name)}
+                            label={truncateUserName(data?.full_name || data?.username)}
                             sx={{
                                 color: 'primary.main',
                                 fontWeight: 600,
@@ -102,7 +102,7 @@ function Chat() {
                             color: 'transparent',
                         }}
                     >
-                        Start a new conversation with AI
+                        Hi {data?.full_name || data?.username} What's on your mind today?
                     </Typography>
                     <Formik
                         initialValues={{ description: '' }}
