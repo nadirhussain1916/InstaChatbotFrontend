@@ -1,16 +1,27 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
+import GloabalLoader from '../../containers/common/loaders/GloabalLoader';
 
 function PrivateRoutes() {
-  const { isAuthenticated } = useSelector(state => state.auth);
-  const { pathname,search } = useLocation();
+  const { isAuthenticated, user } = useSelector(state => state.auth);
+  const { pathname, search } = useLocation();
 
-  return isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/auth/login" state={{ from: `${pathname}${search}` }} />
-  );
+  if (isAuthenticated && (user === undefined || user === null)) {
+    return <GloabalLoader />;
+  }
+  if (isAuthenticated) {
+    // Always redirect to dashboard after login, unless answering questions
+    if (user?.has_answered === true && pathname !== '/') {
+      return <Navigate to="/" replace />;
+    }
+    if (user?.has_answered === false && pathname !== '/question') {
+      return <Navigate to="/question" replace />;
+    }
+    return <Outlet />;
+  } else {
+    return <Navigate to="/auth/login" state={{ from: `${pathname}${search}` }} />;
+  }
 }
 
 export default PrivateRoutes;

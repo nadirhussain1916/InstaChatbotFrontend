@@ -3,6 +3,8 @@ import { Box, IconButton, useTheme, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import InstagramPostsList from './components/InstagramPostsList';
 import ChatInterface from './components/ChatInterface';
+import { useLocation } from 'react-router-dom';
+import Chat from './components/Chat';
 
 function Dashboard() {
   const theme = useTheme();
@@ -12,6 +14,7 @@ function Dashboard() {
   const handleToggle = () => {
     setShowPosts(prev => !prev);
   };
+  const location = useLocation();
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', bgcolor: 'grey.100', position: 'relative' }}>
@@ -38,7 +41,11 @@ function Dashboard() {
 
       {(!isMobile || (isMobile && !showPosts)) && (
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <ChatInterface />
+          {location.pathname === '/' ? (
+            <Chat />
+          ) : (
+            <ChatInterface />
+          )}
         </Box>
       )}
     </Box>

@@ -21,29 +21,22 @@ function InstagramPost({ post }) {
             }}
         >
             <Box sx={{ position: 'relative', aspectRatio: '1 / 1', overflow: 'hidden' }}>
-                <CardMedia
-                    component="img"
-                    image={`${API_URL}${post?.thumbnail_url}`}
-                    alt=''
-                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                {post.post_type === 'video' && (
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            inset: 0,
-                            bgcolor: 'rgba(0, 0, 0, 0.2)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
+                {post.post_type === 'video' ? (
+                    <>
+                        <CardMedia
+                            component="video"
+                            src={`${API_URL}${post?.thumbnail_url}`}
+                            alt=''
+                            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            controls={false}
+                            autoPlay={false}
+                            muted
+                        />
                         <Box
                             sx={{
-                                width: 48,
-                                height: 48,
-                                bgcolor: 'rgba(255, 255, 255, 0.8)',
-                                borderRadius: '50%',
+                                position: 'absolute',
+                                inset: 0,
+                                bgcolor: 'rgba(0, 0, 0, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -51,16 +44,40 @@ function InstagramPost({ post }) {
                         >
                             <Box
                                 sx={{
-                                    width: 0,
-                                    height: 0,
-                                    borderLeft: '8px solid #1f2937',
-                                    borderTop: '6px solid transparent',
-                                    borderBottom: '6px solid transparent',
-                                    ml: '2px',
+                                    width: 48,
+                                    height: 48,
+                                    bgcolor: 'rgba(255, 255, 255, 0.8)',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
                                 }}
-                            />
+                            >
+                                {/* Pause icon */}
+                                <Box
+                                    sx={{
+                                        width: 18,
+                                        height: 18,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="3" y="3" width="4" height="12" rx="1" fill="#1f2937" />
+                                        <rect x="11" y="3" width="4" height="12" rx="1" fill="#1f2937" />
+                                    </svg>
+                                </Box>
+                            </Box>
                         </Box>
-                    </Box>
+                    </>
+                ) : (
+                    <CardMedia
+                        component="img"
+                        image={`${API_URL}${post?.thumbnail_url}`}
+                        alt=''
+                        sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                 )}
             </Box>
 

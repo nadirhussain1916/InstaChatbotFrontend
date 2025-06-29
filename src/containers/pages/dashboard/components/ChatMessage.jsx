@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, useTheme, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 
-function ChatMessage({ message, isLatest }) {
+function ChatMessage({ message, isLatest,profile }) {
   const theme = useTheme();
   const isUser = message.type === 'user';
   const [typedText, setTypedText] = useState('');
@@ -53,8 +53,11 @@ function ChatMessage({ message, isLatest }) {
         // alignItems="flex-end"
         gap={1}
       >
-        <Avatar sx={{ bgcolor: isUser ? '#f97316' : '#e0e0e0' }}>
-          {isUser ? '' : 'AI'}
+        <Avatar
+          sx={{ bgcolor: isUser ? 'transparent' : '#e0e0e0' }}
+          src={isUser ? `${API_URL}${profile}` : undefined}
+        >
+          {!isUser && 'AI'}
         </Avatar>
 
         <Box

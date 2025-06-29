@@ -6,6 +6,7 @@ import PrivateRoutes from './PrivateRoutes';
 import PublicRoutes from './PublicRoutes';
 import GloabalLoader from '@containers/common/loaders/GloabalLoader';
 import Dashboard from '@/containers/pages/dashboard';
+import Question from '@/containers/pages/questions';
 // LAZY LOAD
 const Login = lazy(() => import('@containers/pages/auth/login'));
 
@@ -16,15 +17,20 @@ function AppRoutes() {
         <Suspense fallback={<GloabalLoader />}>
           <Routes>
             <Route path="/" element={<Outlet />}>
+              {/* Public routes */}
               <Route path="auth" element={<PublicRoutes />}>
                 <Route path="login" element={<Login />} />
               </Route>
 
-              <Route path="/" element={<PrivateRoutes />}>
-                <Route path="/" element={<Dashboard />} />
+              {/* Private routes */}
+              <Route element={<PrivateRoutes />}>
+                <Route index element={<Dashboard />} />
+                <Route path="question" element={<Question />} />
+                <Route path="new-chat/:id" element={<Dashboard />} />
               </Route>
             </Route>
           </Routes>
+
         </Suspense>
       </BrowserRouter>
     </ErrorBoundary>
