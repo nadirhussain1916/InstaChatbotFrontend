@@ -107,7 +107,7 @@ function ChatInterface() {
         display="flex"
         justifyContent="flex-end"
         alignItems="center"
-        p={!isMobile ? 2 : 5}
+        p={!isMobile ? 2 : 1}
         borderBottom="1px solid #e0e0e0"
       >
         <Box display="flex" alignItems="center" gap={2}>
