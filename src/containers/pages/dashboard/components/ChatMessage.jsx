@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, useTheme, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
+import { API_URL } from '@/utilities/constants';
 
 function ChatMessage({ message, isLatest,profile }) {
   const theme = useTheme();
