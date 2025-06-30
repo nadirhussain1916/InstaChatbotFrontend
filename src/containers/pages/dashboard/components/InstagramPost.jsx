@@ -51,7 +51,15 @@ function InstagramPost({ post }) {
                                     justifyContent: 'center',
                                 }}
                             >
-                                <PlayArrowIcon sx={{ color: '#1f2937', fontSize: 36 }} />
+                                <a
+                                    href={post?.post_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <PlayArrowIcon sx={{ color: '#1f2937', fontSize: 36 }} />
+                                </a>
+
                             </Box>
                         </Box>
                     </>
