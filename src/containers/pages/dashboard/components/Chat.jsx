@@ -346,7 +346,6 @@ function Chat() {
                 <Box flex={1} position="relative">
                   <TextField
                     fullWidth
-                    multiline
                     minRows={1}
                     maxRows={4}
                     name="description"

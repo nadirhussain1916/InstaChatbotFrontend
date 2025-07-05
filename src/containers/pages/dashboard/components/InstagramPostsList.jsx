@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -36,9 +36,11 @@ function InstagramPostsList() {
   const [deleteChat] = useDeleteChatMutation();
   const [updateChat] = useUpdateChatTitleMutation();
 
-  React.useEffect(() => {
-    setChats(previousChat);
-  }, [previousChat]);
+  useEffect(() => {
+  setChats(previousChat);
+  setEditingIndex(null); // Reset editing index
+  setEditValue(''); // Reset edit value
+}, [previousChat]);
 
   const handleClickNewChat = () => navigate('/');
 
@@ -65,7 +67,7 @@ function InstagramPostsList() {
 
   const handleRenameSubmit = idx => {
     updateChat({
-      thread_id:[idx],
+      thread_id: idx,
       title: editValue,
     });
   };
