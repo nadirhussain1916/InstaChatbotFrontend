@@ -6,36 +6,46 @@ import { useNavigate } from "react-router-dom";
 import GloabalLoader from "@/containers/common/loaders/GloabalLoader";
 import { updateUserDetail } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { options } from "./utilits/data";
 
-const options = ["Reddit", "Google", "Friend", "Colleague"];
+// Helper to match choices based on question text
+const getChoicesForQuestion = text => {
+  const found = options.find(item => item.question === text);
+  return found ? found.choices : [];
+};
 
 function QuestionBlock({ question, answer, onAnswerChange }) {
+  const choices = getChoicesForQuestion(question.text);
+
   return (
-    <Box mb={2} textAlign="center">
+    <Box mb={3} textAlign="center">
       <Typography variant="h6" mb={2} fontWeight={600} color="black">
         {question.text}
       </Typography>
 
+      {/* Chips */}
       <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1} mb={2}>
-        {options.map(opt => (
+        {choices.map((opt, i) => (
           <Chip
-            key={opt}
+            key={i}
             label={opt}
             clickable
             onClick={() => onAnswerChange(question.id, opt)}
             sx={{
               background:
                 answer === opt
-                  ? "#6c63ff "
+                  ? "#6c63ff"
                   : "linear-gradient(to right, #a855f7, #ec4899, #fb923c)",
               color: "#fff",
-              fontWeight: "500",
+              fontWeight: 500,
+              fontSize: "11px",
               "&:hover": { backgroundColor: "#444" },
             }}
           />
         ))}
       </Box>
 
+      {/* Text Input */}
       <TextField
         variant="outlined"
         placeholder="Your answer"
@@ -43,58 +53,71 @@ function QuestionBlock({ question, answer, onAnswerChange }) {
         value={answer}
         onChange={e => onAnswerChange(question.id, e.target.value)}
         sx={{
-          backgroundColor: "",
           borderRadius: 1,
-          input: { color: "black" },
-          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#777" },
+          input: { color: "black", fontSize: "0.875rem" }, // smaller input text size
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#fb923c", // custom outline color
+            borderWidth: 1,
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#a855f7",
+          },
+          "& .MuiInputBase-input::placeholder": {
+            fontSize: "12px",  // smaller placeholder text
+            opacity: 0.7,
+            padding: "3px", // adjust padding for smaller input
+          },
         }}
       />
+
     </Box>
   );
 }
 
 export default function Question() {
   const { data = [], isLoading } = useGetQuestionsQuery();
+  const [submitQuestion, { isLoading: submitting }] = useAddQuestionMutation();
   const [answers, setAnswers] = useState({});
-  const [currentStep, setCurrentStep] = useState(0);
-  const questionsPerStep = 3;
-  const totalSteps = Math.ceil(data.length / questionsPerStep);
-  const [submitQuestion, { isLoading: loading }] = useAddQuestionMutation();
-  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
+  const questionsPerPage = 3;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const totalSteps = Math.ceil(data.length / questionsPerPage);
 
   const handleAnswerChange = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  if (isLoading) return <GloabalLoader />;
+  // const handleNext = () => {
+  //   if (step < totalSteps - 1) {
+  //     setStep(prev => prev + 1);
+  //   }
+  // };
 
-  const questionsOnPage = data.slice(
-    currentStep * questionsPerStep,
-    currentStep * questionsPerStep + questionsPerStep
-  );
-
-  const isLastStep = currentStep === totalSteps - 1;
-  const handleNext = () => {
-    console.log('Next step', currentStep + 1);
-    setCurrentStep(prev => prev + 1);
-  };
   const handleSubmit = async () => {
-    console.log('Submitting answer');
-
     const payload = {
       answers: data.map(q => ({
         question: q.id,
         answer: answers[q.id] || "",
       })),
     };
-    await submitQuestion(payload).unwrap();
-    dispatch(updateUserDetail({ has_answered: true }));
 
-    navigate('/');
-
+    try {
+      await submitQuestion(payload).unwrap();
+      dispatch(updateUserDetail({ has_answered: true }));
+      navigate("/");
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   };
+
+  if (isLoading) return <GloabalLoader />;
+
+  const currentQuestions = data.slice(
+    step * questionsPerPage,
+    step * questionsPerPage + questionsPerPage
+  );
 
   return (
     <div
@@ -108,48 +131,66 @@ export default function Question() {
     >
       <Box
         sx={{
-          backgroundSize: "cover",
-          backgroundPosition: "center",
           padding: 4,
           borderRadius: 3,
           color: "#fff",
           width: 700,
           margin: "120px auto",
+          backgroundColor: "rgba(255,255,255,0.9)",
           boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
         }}
       >
         <div
           style={{
-            position: 'relative',
-            bottom: '31px',
-            width: '700px',
-            right: '33px',
-            borderRadius: '10px 10px 0px 0px',
-            height: '8px',
-            background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+            position: "relative",
+            bottom: "31px",
+            width: "700px",
+            right: "33px",
+            borderRadius: "10px 10px 0px 0px",
+            height: "8px",
+            background: "linear-gradient(to right, #a855f7, #ec4899, #fb923c)",
           }}
-        ></div>
-        {
-          questionsOnPage.map(q => (
-            <QuestionBlock
-              key={q.id}
-              question={q}
-              answer={answers[q.id] || ""}
-              onAnswerChange={handleAnswerChange}
-            />
-          ))
-        }
+        />
 
-        <Box mt={2} display="flex" alignItems="center" justifyContent="flex-end">
-          <Button
-            sx={{ cursor: "pointer", color: "black", fontWeight: 600 }}
-            onClick={isLastStep ? handleSubmit : handleNext}
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : isLastStep ? "Submit" : "Next"}
-          </Button>
-        </Box>
-      </Box >
-    </div >
+        {currentQuestions.map(question => (
+          <QuestionBlock
+            key={question.id}
+            question={question}
+            answer={answers[question.id] || ""}
+            onAnswerChange={handleAnswerChange}
+          />
+        ))}
+
+       <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
+  <Button
+    variant="outlined"
+    sx={{ cursor: "pointer", fontWeight: 400, color: "black",  }}
+    onClick={() => setStep(prev => Math.max(prev - 1, 0))}
+    disabled={step === 0}
+  >
+    Previous
+  </Button>
+
+  <Button
+    variant="contained"
+    sx={{
+  cursor: "pointer",
+  color: "white",
+  fontWeight: 400,
+  background: "linear-gradient(to right, #a855f7, #ec4899, #fb923c)",
+  "&:hover": {
+    background: "linear-gradient(to right, #a855f7, #ec4899, #fb923c)",
+    opacity: 0.9, // optional: a slight effect on hover
+  }
+}}
+    onClick={step === totalSteps - 1 ? handleSubmit : () => setStep(prev => Math.min(prev + 1, totalSteps - 1))}
+    disabled={submitting}
+  >
+    {submitting ? "Submitting..." : step === totalSteps - 1 ? "Submit" : "Next"}
+  </Button>
+</Box>
+
+      </Box>
+    </div>
   );
 }
