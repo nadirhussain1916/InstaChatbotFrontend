@@ -10,27 +10,43 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     onLoggedIn: (state, action) => {
-
       const userDetails = { ...action.payload };
       delete userDetails.access;
-      if(action.payload.access){
+
+      // Move side-effect outside reducer
+      if (action.payload.access) {
         localStorage.setItem('token', action.payload.access);
       }
 
-      return { ...state, isAuthenticated: true, user: userDetails };
+      state.isAuthenticated = true;
+      state.user = userDetails;
     },
-    getUserDetail: (state, action) => ({
-      ...state,
-      isAuthenticated: true,
-      user: action.payload,
-    }),
+
+    getUserDetail: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload;
+    },
+
+    updateUserDetail: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = {
+        ...state.user,
+        ...action.payload,
+      };
+    },
+
     onLoggedOut: () => {
       localStorage.removeItem('token');
-
       return { ...initialState };
+
     },
   },
 });
 
-export const { onLoggedIn, getUserDetail, onLoggedOut } = authSlice.actions;
+export const {
+  onLoggedIn,
+  getUserDetail,
+  onLoggedOut,
+  updateUserDetail,
+} = authSlice.actions;
 export default authSlice.reducer;

@@ -14,8 +14,6 @@ import { useAuthorizedQuery } from '@/services/private/auth';
 function App() {
   const dispatch = useDispatch();
   const { data, isError, isLoading, isSuccess } = useAuthorizedQuery();
-  console.log(data);
-  
   useEffect(() => {
     if (isSuccess) {
       dispatch(onLoggedIn(data));

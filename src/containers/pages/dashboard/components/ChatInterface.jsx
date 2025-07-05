@@ -51,6 +51,7 @@ function ChatInterface() {
   const handleAppLogout = () => {
     handleLogout();
     handleMenuClose();
+    window.location.reload();
   };
 
   // Populate chatMessages from chatDetail on load/refresh
@@ -76,13 +77,13 @@ function ChatInterface() {
 
     try {
       const payload = {
-        ...values,
+        prompt: values?.description,
         thread_id: id || '',
       };
-      const response = await createChat(payload).unwrap();
+      const resp = await createChat(payload).unwrap();
 
       const botMessages = [];
-      const slidesRaw = response?.carousel_content;
+      const slidesRaw = resp?.response;
       if (Array.isArray(slidesRaw)) {
         slidesRaw.forEach((slide, idx) =>
           botMessages.push({ id: Date.now() + idx + 1, content: slide, type: 'ai', timestamp: new Date().toLocaleTimeString() })

@@ -16,7 +16,7 @@ function AppRoutes() {
       <BrowserRouter>
         <Suspense fallback={<GloabalLoader />}>
           <Routes>
-            <Route path="/" element={<Outlet />}>
+
               {/* Public routes */}
               <Route path="auth" element={<PublicRoutes />}>
                 <Route path="login" element={<Login />} />
@@ -24,11 +24,11 @@ function AppRoutes() {
 
               {/* Private routes */}
               <Route element={<PrivateRoutes />}>
-                <Route index element={<Dashboard />} />
+                <Route path='/' element={<Dashboard />} />
                 <Route path="question" element={<Question />} />
                 <Route path="new-chat/:id" element={<Dashboard />} />
               </Route>
-            </Route>
+
           </Routes>
 
         </Suspense>

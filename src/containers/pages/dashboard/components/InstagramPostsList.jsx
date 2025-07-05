@@ -1,27 +1,23 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import {
   Box,
   Typography,
-  Paper,
-  Grid,
-  IconButton,
   Button,
   useMediaQuery,
   useTheme,
-  Stack,
-  styled,
-  Switch,
 } from '@mui/material';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useNavigate } from 'react-router-dom';
 
 import InstagramPost from './InstagramPost';
 import { useGetUserPostQuery } from '@/services/private/post';
+import { useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
 import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLoader';
-import { useGetPreviousChatQuery } from '@/services/private/chat';
 import { truncateMessage } from '@/utilities/helpers';
-import { Opacity } from '@mui/icons-material';
 
 function InstagramPostsList() {
   const { data: mockInstagramPosts = [], isLoading } = useGetUserPostQuery();
@@ -31,92 +27,53 @@ function InstagramPostsList() {
   const [view, setView] = useState('posts');
   const navigate = useNavigate();
 
-  const formatNumber = num => (num >= 1000 ? `${(num / 1000).toFixed(1)}k` : num.toString());
-  const totalLikes = mockInstagramPosts.reduce((sum, post) => sum + (post.likes || 0), 0);
-  const totalComments = mockInstagramPosts.reduce((sum, post) => sum + (post.comments || 0), 0);
+  // State for menu and inline editing
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuIndex, setMenuIndex] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [chats, setChats] = useState(previousChat);
+  const [deleteChat] = useDeleteChatMutation();
+  const [updateChat] = useUpdateChatTitleMutation();
+
+  React.useEffect(() => {
+    setChats(previousChat);
+  }, [previousChat]);
 
   const handleClickNewChat = () => navigate('/');
-const AntSwitch = styled(Switch)(({ theme }) => ({
-  width: 220,
-  height: 50,
-  padding: 0,
-  display: 'flex',
-  position: 'relative',
 
-  '& .MuiSwitch-switchBase': {
-    padding: 4,
-    position: 'absolute',
-    top: '50%',
-    left: 4,
-    transform: 'translateY(-50%)',
-    zIndex: 2,
-    transition: theme.transitions.create(['transform'], {
-      duration: 300,
-    }),
+  const handleMenuOpen = (event, idx) => {
+    event.stopPropagation();
+    setMenuAnchorEl(event.currentTarget);
+    setMenuIndex(idx);
+  };
 
-    '&.Mui-checked': {
-      transform: 'translate(166px, -50%)',
-      color: '#fff',
-      '& + .MuiSwitch-track': {
-        background: 'linear-gradient(to right, #ec4899, #f97316)', // ✅ Correct gradient
-        opacity: 1, // ✅ Correct casing
-        '&::before': {
-          display: 'none',
-        },
-        '&::after': {
-          display: 'block',
-        },
-      },
-    },
-  },
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setMenuIndex(null);
+  };
 
-  '& .MuiSwitch-thumb': {
-    width: 42,
-    height: 42,
-    borderRadius: '50%',
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-  },
+  const handleRename = idx => {
+    setEditingIndex(idx);
+    setEditValue(truncateMessage(chats[idx]?.title, 30) || 'New conversation');
+    handleMenuClose();
+  };
 
-  '& .MuiSwitch-track': {
-    background: 'linear-gradient(to right, #ec4899, #f97316)',
-     opacity: 1,
-    borderRadius: 25,
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 600,
-    fontSize: 16,
-    color: '#fff',
-    transition: theme.transitions.create(['background-color'], {
-      duration: 300,
-    }),
+  const handleRenameChange = e => {
+    setEditValue(e.target.value);
+  };
 
-    '&::before, &::after': {
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      fontSize: 16,
-      fontWeight: 600,
-      color: '#fff',
-    },
+  const handleRenameSubmit = idx => {
+    updateChat({
+      thread_id:[idx],
+      title: editValue,
+    });
+  };
 
-    '&::before': {
-      content: '"Chat"',
-      right: 24,
-      display: 'block',
-    },
-
-    '&::after': {
-      content: '"Posts"',
-      left: 24,
-      display: 'none',
-    },
-  },
-}));
+  const handleDelete = idx => {
+    deleteChat(idx);
+    handleMenuClose();
+  };
 
   return (
     <Box
@@ -128,19 +85,82 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
         flexDirection: 'column',
       }}
     >
-      {/* Toggle Section */}
-      <Box sx={{ p: isMobile ? 1 : 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 3 }}>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-            <AntSwitch
-              checked={view === 'chat'}
-              onChange={e => setView(e.target.checked ? 'chat' : 'posts')}
-            />
-          </Stack>
+      {/* Custom Toggle */}
+      <Box sx={{ p: isMobile ? 1 : 2, display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            width: 220,
+            height: 50,
+            borderRadius: 999,
+            background: 'linear-gradient(to right, #ec4899, #f97316)',
+            position: 'relative',
+            p: '4px',
+          }}
+        >
+          {/* Thumb */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 2,
+              left: view === 'posts' ? 2 : 110,
+              width: 105,
+              height: 46,
+              backgroundColor: '#fff',
+              borderRadius: 999,
+              transition: 'left 0.3s ease',
+              zIndex: 4,
+            }}
+          />
+
+          {/* Clickable Labels */}
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              height: '100%',
+              zIndex: 2,
+            }}
+          >
+            {/* Posts */}
+            <Box
+              onClick={() => setView('posts')}
+              sx={{
+                width: '50%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: view === 'posts' ? '#ec4899' : '#6b7280',
+                fontWeight: 600,
+                transition: 'color 0.3s ease',
+              }}
+            >
+              <Typography color='white' variant="caption">Top Posts</Typography>
+            </Box>
+
+            {/* Chat */}
+            <Box
+              onClick={() => setView('chat')}
+              sx={{
+                width: '50%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: view === 'chat' ? '#f97316' : '#6b7280',
+                fontWeight: 600,
+                transition: 'color 0.3s ease',
+              }}
+            >
+              <Typography color='white' variant="caption">Chats</Typography>
+            </Box>
+          </Box>
         </Box>
       </Box>
 
-      {/* Scrollable Content */}
+      {/* Content */}
       <Box
         sx={{
           flex: 1,
@@ -169,7 +189,6 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
           </Box>
         ) : view === 'posts' ? (
           <>
-            {/* Posts List */}
             {mockInstagramPosts.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <Typography variant="body1" color="text.secondary" fontWeight={500}>
@@ -177,40 +196,57 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
-                {mockInstagramPosts.map((post, index) => (
-                  <Box key={post.id} sx={{ position: 'relative' }}>
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -8,
-                        left: -8,
-                        zIndex: 10,
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        background: 'linear-gradient(to right, #ec4899, #f97316)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography
-                        variant="caption"
-                        sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
+              <><Button
+                variant="contained"
+                fullWidth
+                sx={{
+                  background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                  color: '#fff',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  py: 1.5,
+                  mt: 2.1,
+                  fontSize: '1rem',
+                  '&:hover': {
+                    background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
+                  },
+                }}
+              >
+                Top Posts
+              </Button><Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
+                  {mockInstagramPosts.map((post, index) => (
+                    <Box key={post.id} sx={{ position: 'relative' }}>
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: -8,
+                          left: -8,
+                          zIndex: 10,
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          background: 'linear-gradient(to right, #ec4899, #f97316)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
                       >
-                        {index + 1}
-                      </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
+                        >
+                          {index + 1}
+                        </Typography>
+                      </Box>
+                      <InstagramPost post={post} />
                     </Box>
-                    <InstagramPost post={post} />
-                  </Box>
-                ))}
-              </Box>
+                  ))}
+                </Box></>
             )}
           </>
         ) : (
           <>
-            {/* Chat List */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 3 }}>
               <Button
                 onClick={handleClickNewChat}
@@ -232,13 +268,12 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
               >
                 + New Chat
               </Button>
-              {previousChat.map((chat, index) => (
+              {chats.map((chat, index) => (
                 <Box
                   key={index}
-                  onClick={() => navigate(`/new-chat/${chat?.thread_id}`)}
                   sx={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    alignItems: 'center',
                     px: 2,
                     py: 1.5,
                     borderRadius: 2,
@@ -246,35 +281,86 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
                     '&:hover': {
                       bgcolor: '#f3f4f6',
                     },
+                    position: 'relative',
+                  }}
+                  onClick={() => {
+                    if (editingIndex === index) return;
+                    navigate(`/new-chat/${chat?.thread_id}`);
                   }}
                 >
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      fontWeight: 500,
-                      color: '#111827',
-                      fontSize: '0.95rem',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
+                  {/* Chat name or input for rename */}
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    {editingIndex === index ? (
+                      <TextField
+                        value={editValue}
+                        onChange={handleRenameChange}
+                        onClick={e => e.stopPropagation()}
+                        onBlur={() => handleRenameSubmit(index)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') handleRenameSubmit(chat?.thread_id);
+                          if (e.key === 'Escape') setEditingIndex(null);
+                        }}
+                        size="small"
+                        autoFocus
+                        fullWidth
+                        inputProps={{
+                          style: {
+                            fontWeight: 500,
+                            fontSize: '0.95rem',
+                            color: '#111827',
+                          },
+                        }}
+                      />
+                    ) : (
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: 500,
+                          color: '#111827',
+                          fontSize: '0.95rem',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {truncateMessage(chat?.title, 30) || 'New conversation'}
+                      </Typography>
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: '#6b7280',
+                        fontSize: '0.75rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {chat?.created_at
+                        ? new Date(chat.created_at).toLocaleString()
+                        : 'Recently'}
+                    </Typography>
+                  </Box>
+                  {/* Three-dot menu */}
+                  <IconButton
+                    size="small"
+                    sx={{ ml: 1 }}
+                    onClick={e => handleMenuOpen(e, index)}
                   >
-                    {truncateMessage(chat?.messages?.message, 30) || 'New conversation'}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: '#6b7280',
-                      fontSize: '0.75rem',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                  {/* Menu for options */}
+                  <Menu
+                    anchorEl={menuAnchorEl}
+                    open={menuIndex === index}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    onClick={e => e.stopPropagation()}
                   >
-                    {chat?.created_at
-                      ? new Date(chat.created_at).toLocaleString()
-                      : 'Recently'}
-                  </Typography>
+                    <MenuItem onClick={() => handleRename(index)}>Rename</MenuItem>
+                    <MenuItem onClick={() => handleDelete(chat?.thread_id)} sx={{ color: 'red' }}>Delete</MenuItem>
+                  </Menu>
                 </Box>
               ))}
             </Box>

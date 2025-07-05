@@ -13,7 +13,7 @@ function PrivateRoutes() {
   if (isAuthenticated) {
     // Always redirect to dashboard after login, unless answering questions
     if (user?.has_answered === true && pathname !== '/') {
-      return <Navigate to="/" replace />;
+      return <Navigate to="/" />;
     }
     if (user?.has_answered === false && pathname !== '/question') {
       return <Navigate to="/question" replace />;

@@ -4,6 +4,8 @@ import image from "@assets/image.jpg";
 import { useAddQuestionMutation, useGetQuestionsQuery } from "@/services/private/questions";
 import { useNavigate } from "react-router-dom";
 import GloabalLoader from "@/containers/common/loaders/GloabalLoader";
+import { updateUserDetail } from "@/store/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const options = ["Reddit", "Google", "Friend", "Colleague"];
 
@@ -58,14 +60,15 @@ export default function Question() {
   const [currentStep, setCurrentStep] = useState(0);
   const questionsPerStep = 3;
   const totalSteps = Math.ceil(data.length / questionsPerStep);
-  const [submitQuestion, {isLoading:loading}] = useAddQuestionMutation();
+  const [submitQuestion, { isLoading: loading }] = useAddQuestionMutation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleAnswerChange = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  if (isLoading) return <GloabalLoader/>;
+  if (isLoading) return <GloabalLoader />;
 
   const questionsOnPage = data.slice(
     currentStep * questionsPerStep,
@@ -73,19 +76,25 @@ export default function Question() {
   );
 
   const isLastStep = currentStep === totalSteps - 1;
-
-  const handleNext = () => setCurrentStep(prev => prev + 1);
-  const handleSubmit = async () => {
-  const payload = {
-    answers: data.map(q => ({
-      question: q.id,
-      answer: answers[q.id] || "",
-    })),
+  const handleNext = () => {
+    console.log('Next step', currentStep + 1);
+    setCurrentStep(prev => prev + 1);
   };
-    await submitQuestion(payload).unwrap();
-      navigate('/');
+  const handleSubmit = async () => {
+    console.log('Submitting answer');
 
-};
+    const payload = {
+      answers: data.map(q => ({
+        question: q.id,
+        answer: answers[q.id] || "",
+      })),
+    };
+    await submitQuestion(payload).unwrap();
+    dispatch(updateUserDetail({ has_answered: true }));
+
+    navigate('/');
+
+  };
 
   return (
     <div
@@ -116,30 +125,30 @@ export default function Question() {
             width: '700px',
             right: '33px',
             borderRadius: '10px 10px 0px 0px',
-        height: '8px',
-        background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+            height: '8px',
+            background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
           }}
         ></div>
         {
-    questionsOnPage.map(q => (
-      <QuestionBlock
-        key={q.id}
-        question={q}
-        answer={answers[q.id] || ""}
-        onAnswerChange={handleAnswerChange}
-      />
-    ))
-  }
+          questionsOnPage.map(q => (
+            <QuestionBlock
+              key={q.id}
+              question={q}
+              answer={answers[q.id] || ""}
+              onAnswerChange={handleAnswerChange}
+            />
+          ))
+        }
 
-  <Box mt={2} display="flex" alignItems="center" justifyContent="flex-end">
-    <Button
-      sx={{ cursor: "pointer", color: "black", fontWeight: 600 }}
-      onClick={isLastStep ? handleSubmit : handleNext}
-      disabled={loading}
-    >
-      {loading ? 'Submitting...' : isLastStep ? "Submit" : "Next"}
-    </Button>
-  </Box>
+        <Box mt={2} display="flex" alignItems="center" justifyContent="flex-end">
+          <Button
+            sx={{ cursor: "pointer", color: "black", fontWeight: 600 }}
+            onClick={isLastStep ? handleSubmit : handleNext}
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : isLastStep ? "Submit" : "Next"}
+          </Button>
+        </Box>
       </Box >
     </div >
   );

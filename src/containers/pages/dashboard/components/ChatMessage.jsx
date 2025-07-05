@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, useTheme, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/utilities/constants';
-import dayjs from 'dayjs';
 
 function ChatMessage({ message, isLatest,profile }) {
   const theme = useTheme();
@@ -92,14 +91,6 @@ function ChatMessage({ message, isLatest,profile }) {
                 |
               </motion.span>
             )}
-          </Typography>
-          <Typography
-            variant="caption"
-            display="block"
-            mt={1}
-            sx={{ color: isUser ? '#fce7f3' : theme.palette.grey[500] }}
-          >
-            {dayjs(message?.timestamp).format('hh:mm A')}
           </Typography>
         </Box>
       </Box>
