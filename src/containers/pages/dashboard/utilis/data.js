@@ -1,6 +1,6 @@
 export const chatFlowJson = {
   "content_creator": {
-    "greeting": "👋 Hi FIRSTNAME, what would you like to create today?",
+    "greeting": "👋 Hi what would you like to create today?",
     "types": [
       {
         "type": "Carousel",
@@ -13,11 +13,6 @@ export const chatFlowJson = {
                 "question": "What’s the next step you want the person seeing your content to take?",
                 "type": "select",
                 "options": ["Follow you", "Comment a keyword", "DM you a message", "Join your email list", "Save the post", "Something else"]
-              },
-              {
-                "question": "What’s your keyword?",
-                "type": "select",
-                "options":["Yes", "No"],
               },
               {
                 "question": "Any story or trend this can tie to?",
@@ -80,14 +75,39 @@ export const chatFlowJson = {
         "type": "Reel",
         "options": [
           {
-            "goal": "Awareness | Engagement | Sales",
+            "goal": "Awareness",
             "question": "What is your goal?", // added
             "followups": [
               {
-                "question": "What’s your goal?",
+                "question": "Is this a talking video, b-roll with voiceover, or trending sound?",
                 "type": "select",
-                "options": ["Awareness", "Engagement", "Sales"]
+                "options": ["Talking", "B-Roll", "Trending Sound", "Not sure yet"]
               },
+              {
+                "question": "What’s your hook or opening line?",
+                "type": "text"
+              },
+            ],
+          },
+          {
+            "goal": "Engagement",
+            "question": "What is your goal?", // added
+            "followups": [
+              {
+                "question": "Is this a talking video, b-roll with voiceover, or trending sound?",
+                "type": "select",
+                "options": ["Talking", "B-Roll", "Trending Sound", "Not sure yet"]
+              },
+              {
+                "question": "What’s your hook or opening line?",
+                "type": "text"
+              },
+            ],
+          },
+          {
+            "goal": "Sales",
+            "question": "What is your goal?", // added
+            "followups": [
               {
                 "question": "Is this a talking video, b-roll with voiceover, or trending sound?",
                 "type": "select",
@@ -99,20 +119,16 @@ export const chatFlowJson = {
               },
             ],
           }
+
         ]
       },
       {
         "type": "Email",
         "options": [
           {
-            "goal": "Nurture | Launch / Sales | Freebie follow-up / Delivery | Re-engagement | Welcome / Intro | Something else",
+            "goal": "Nurture",
             "question": "What is your goal?", // added
             "followups": [
-              {
-                "question": "Cool, what’s the goal of this email?",
-                "type": "select",
-                "options": ["Nurture", "Launch / Sales", "Freebie follow-up / Delivery", "Re-engagement", "Welcome / Intro", "Something else"]
-              },
               {
                 "question": "Let’s narrow it down. What are you writing about?",
                 "type": "select",
@@ -138,11 +154,161 @@ export const chatFlowJson = {
                 "type": "select",
                 "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
               },
+            ]
+          },
+          {
+            "goal": "Launch / Sales",
+            "question": "What is your goal?", // added
+            "followups": [
               {
-                "question": "Would you like a subject line too?",
+                "question": "Let’s narrow it down. What are you writing about?",
                 "type": "select",
-                "options": ["Yes", "No"],
-              }
+                "options": [
+                  "A new offer or launch",
+                  "A client win or testimonial",
+                  "A personal story",
+                  "A lesson or insight",
+                  "Addressing objections",
+                  "Teasing something coming soon",
+                  "Delivering a freebie",
+                  "Recapping a popular post",
+                  "Driving to book a discovery call"
+                ]
+              },
+              {
+                "question": "What do you want them to do after reading?",
+                "type": "select",
+                "options": ["Click a link", "Hit reply", "DM you a keyword", "Book a call", "Share the email", "Download something"]
+              },
+              {
+                "question": "What’s the tone?",
+                "type": "select",
+                "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
+              },
+            ]
+          },
+          {
+            "goal": " Freebie follow-up / Delivery",
+            "question": "What is your goal?", // added
+            "followups": [
+              {
+                "question": "Let’s narrow it down. What are you writing about?",
+                "type": "select",
+                "options": [
+                  "A new offer or launch",
+                  "A client win or testimonial",
+                  "A personal story",
+                  "A lesson or insight",
+                  "Addressing objections",
+                  "Teasing something coming soon",
+                  "Delivering a freebie",
+                  "Recapping a popular post",
+                  "Driving to book a discovery call"
+                ]
+              },
+              {
+                "question": "What do you want them to do after reading?",
+                "type": "select",
+                "options": ["Click a link", "Hit reply", "DM you a keyword", "Book a call", "Share the email", "Download something"]
+              },
+              {
+                "question": "What’s the tone?",
+                "type": "select",
+                "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
+              },
+            ]
+          },
+          {
+            "goal": "Re-engagement",
+            "question": "What is your goal?", // added
+            "followups": [
+              {
+                "question": "Let’s narrow it down. What are you writing about?",
+                "type": "select",
+                "options": [
+                  "A new offer or launch",
+                  "A client win or testimonial",
+                  "A personal story",
+                  "A lesson or insight",
+                  "Addressing objections",
+                  "Teasing something coming soon",
+                  "Delivering a freebie",
+                  "Recapping a popular post",
+                  "Driving to book a discovery call"
+                ]
+              },
+              {
+                "question": "What do you want them to do after reading?",
+                "type": "select",
+                "options": ["Click a link", "Hit reply", "DM you a keyword", "Book a call", "Share the email", "Download something"]
+              },
+              {
+                "question": "What’s the tone?",
+                "type": "select",
+                "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
+              },
+            ]
+          },
+          {
+            "goal": "Welcome / Intro",
+            "question": "What is your goal?", // added
+            "followups": [
+              {
+                "question": "Let’s narrow it down. What are you writing about?",
+                "type": "select",
+                "options": [
+                  "A new offer or launch",
+                  "A client win or testimonial",
+                  "A personal story",
+                  "A lesson or insight",
+                  "Addressing objections",
+                  "Teasing something coming soon",
+                  "Delivering a freebie",
+                  "Recapping a popular post",
+                  "Driving to book a discovery call"
+                ]
+              },
+              {
+                "question": "What do you want them to do after reading?",
+                "type": "select",
+                "options": ["Click a link", "Hit reply", "DM you a keyword", "Book a call", "Share the email", "Download something"]
+              },
+              {
+                "question": "What’s the tone?",
+                "type": "select",
+                "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
+              },
+            ]
+          },
+          {
+            "goal": "Something else",
+            "question": "What is your goal?", // added
+            "followups": [
+              {
+                "question": "Let’s narrow it down. What are you writing about?",
+                "type": "select",
+                "options": [
+                  "A new offer or launch",
+                  "A client win or testimonial",
+                  "A personal story",
+                  "A lesson or insight",
+                  "Addressing objections",
+                  "Teasing something coming soon",
+                  "Delivering a freebie",
+                  "Recapping a popular post",
+                  "Driving to book a discovery call"
+                ]
+              },
+              {
+                "question": "What do you want them to do after reading?",
+                "type": "select",
+                "options": ["Click a link", "Hit reply", "DM you a keyword", "Book a call", "Share the email", "Download something"]
+              },
+              {
+                "question": "What’s the tone?",
+                "type": "select",
+                "options": ["Honest and direct", "Warm and story-driven", "Punchy and persuasive", "Educational"]
+              },
             ]
           }
         ]
