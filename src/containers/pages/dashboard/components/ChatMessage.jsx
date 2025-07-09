@@ -1,49 +1,47 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography, useTheme, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/utilities/constants';
 
-function ChatMessage({ message, isLatest,profile }) {
+function removeSquareBrackets(text) {
+  if (!text) return '';
+  if (text.startsWith('[') && text.endsWith(']')) {
+    return text.slice(1, -1).trim();
+  }
+  return text.trim();
+}
+
+function ChatMessage({ message, profile, showTyping = false }) {
   const theme = useTheme();
   const isUser = message.type === 'user';
   const [typedText, setTypedText] = useState('');
-  const messageRef = useRef();
-  const fullText = removeSquareBrackets(message.content);
+
+  const fullText = useMemo(() => removeSquareBrackets(message.content), [message.content]);
 
   useEffect(() => {
-    if (isLatest && messageRef.current) {
-      messageRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [isLatest]);
+    let interval;
 
-  useEffect(() => {
-    if (isUser) {
-      setTypedText(fullText);
-      return;
-    }
+    if (isUser || !showTyping) {
+      setTypedText(fullText); // Show message instantly
+    } else {
+      let index = 0;
+      setTypedText(''); // Start fresh for typing animation
 
-    setTypedText('');
-    let index = 0;
-    const interval = setInterval(() => {
-      setTypedText(prev => prev + fullText.charAt(index));
-      index++;
-      if (index >= fullText.length) clearInterval(interval);
-    }, 20);
+      interval = setInterval(() => {
+        setTypedText(prev => {
+          const next = prev + fullText.charAt(index);
+          index++;
+          if (index >= fullText.length) clearInterval(interval);
+          return next;
+        });
+      }, 20);
+    }
 
     return () => clearInterval(interval);
-  }, [fullText]);
-
-  function removeSquareBrackets(text) {
-    if (!text) return '';
-    if (text.startsWith('[') && text.endsWith(']')) {
-      return text.slice(1, -1).trim();
-    }
-    return text.trim();
-  }
+  }, [message.id, fullText, isUser, showTyping]);
 
   return (
     <Box
-      ref={messageRef}
       display="flex"
       justifyContent={isUser ? 'flex-end' : 'flex-start'}
       mb={2}
@@ -51,7 +49,6 @@ function ChatMessage({ message, isLatest,profile }) {
       <Box
         display="flex"
         flexDirection={isUser ? 'row-reverse' : 'row'}
-        // alignItems="flex-end"
         gap={1}
       >
         <Avatar
@@ -82,8 +79,9 @@ function ChatMessage({ message, isLatest,profile }) {
         >
           <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
             {typedText}
-            {!isUser && typedText.length < fullText.length && (
+            {!isUser && showTyping && typedText.length < fullText.length && (
               <motion.span
+                key={`cursor-${typedText.length}`}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ repeat: Infinity, duration: 1 }}
                 style={{ display: 'inline-block' }}
@@ -98,4 +96,4 @@ function ChatMessage({ message, isLatest,profile }) {
   );
 }
 
-export default ChatMessage;
+export default React.memo(ChatMessage);

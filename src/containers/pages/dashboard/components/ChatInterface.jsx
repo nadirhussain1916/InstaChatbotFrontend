@@ -39,6 +39,8 @@ function ChatInterface() {
   const { data } = useAuthorizedQuery();
   const [createChat] = useCreateChatMutation();
   const { id } = useParams();
+  console.log();
+
   const { data: chatDetail } = useGetChatDetailQuery(id);
 
   // UI states
@@ -55,6 +57,9 @@ function ChatInterface() {
   };
 
   // Populate chatMessages from chatDetail on load/refresh
+  const latestAIIndex = chatMessages?.map(m => m.type).lastIndexOf('ai');
+  console.log('latestAIInde', latestAIIndex);
+  
   React.useEffect(() => {
     if (Array.isArray(chatDetail?.messages) && chatDetail?.messages?.length > 0) {
       setChatMessages(
@@ -80,10 +85,15 @@ function ChatInterface() {
         prompt: values?.description,
         thread_id: id || '',
       };
-      const resp = await createChat(payload).unwrap();
+      console.log('payload', payload);
+
+      const resp = await createChat(payload);
+      console.log('resp', resp);
 
       const botMessages = [];
-      const slidesRaw = resp?.response;
+      const slidesRaw = resp?.data?.response;
+      console.log('slidesRaw', slidesRaw);
+
       if (Array.isArray(slidesRaw)) {
         slidesRaw.forEach((slide, idx) =>
           botMessages.push({ id: Date.now() + idx + 1, content: slide, type: 'ai', timestamp: new Date().toLocaleTimeString() })
@@ -137,15 +147,36 @@ function ChatInterface() {
 
       {/* Chat Body */}
       <Box flex={1} overflow="auto" p={3}>
-        {chatMessages.map((message, index) => (
-          <ChatMessage key={message.id} message={message} isLatest={index === chatMessages.length - 1} profile={data?.profile_pic} />
-        ))}
-        {isTyping && (
-          <Box display="flex" justifyContent="flex-start" mb={2} border="1px solid #e0e0e0" borderRadius={4} boxShadow={1} px={2} py={1.5}>
-            <Typography fontSize={12} color="text.secondary">AI is typing...</Typography>
-          </Box>
-        )}
-      </Box>
+
+{chatMessages?.map((message, index) => {
+  const showTyping = index === latestAIIndex;
+
+  return (
+    <ChatMessage
+      key={message.id ?? index}
+      message={message}
+      profile={data?.profile_pic}
+      showTyping={showTyping}
+    />
+  );
+})}
+  {isTyping && (
+    <Box
+      display="flex"
+      justifyContent="flex-start"
+      mb={2}
+      border="1px solid #e0e0e0"
+      borderRadius={4}
+      boxShadow={1}
+      px={2}
+      py={1.5}
+    >
+      <Typography fontSize={12} color="text.secondary">
+        AI is typing...
+      </Typography>
+    </Box>
+  )}
+</Box>
 
       {/* Input */}
       <Box p={3} borderTop="1px solid #e0e0e0">

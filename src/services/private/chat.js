@@ -8,13 +8,14 @@ export const authApi = privateAPI.injectEndpoints({
           method: 'POST',
           body
         }),
+        invalidatesTags:['getChat']
       }),
       getPreviousChat: build.query({
         query: () => ({
           url: '/instagram/chats/',
           method: 'GET',
         }),
-        providesTags: ['ChatList'],
+        providesTags: ['ChatList', 'getChat'],
       }),
       getChatId: build.query({
         query: () => ({

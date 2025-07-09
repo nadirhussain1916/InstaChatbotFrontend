@@ -37,10 +37,10 @@ function InstagramPostsList() {
   const [updateChat] = useUpdateChatTitleMutation();
 
   useEffect(() => {
-  setChats(previousChat);
-  setEditingIndex(null); // Reset editing index
-  setEditValue(''); // Reset edit value
-}, [previousChat]);
+    setChats(previousChat);
+    setEditingIndex(null); // Reset editing index
+    setEditValue(''); // Reset edit value
+  }, [previousChat]);
 
   const handleClickNewChat = () => navigate('/');
 
@@ -104,8 +104,8 @@ function InstagramPostsList() {
             sx={{
               position: 'absolute',
               top: 2,
-              left: view === 'posts' ? 2 : 110,
-              width: 105,
+              left: view === 'posts' ? 2 : 168,
+              width: 50,
               height: 46,
               backgroundColor: '#fff',
               borderRadius: 999,
@@ -138,7 +138,11 @@ function InstagramPostsList() {
                 transition: 'color 0.3s ease',
               }}
             >
-              <Typography color='white' variant="caption">Top Posts</Typography>
+              {view !== 'posts' && (
+                <Typography color="white" variant="caption">
+                  Top Posts
+                </Typography>
+              )}
             </Box>
 
             {/* Chat */}
@@ -156,7 +160,11 @@ function InstagramPostsList() {
                 transition: 'color 0.3s ease',
               }}
             >
-              <Typography color='white' variant="caption">Chats</Typography>
+              {view !== 'chat' && (
+                <Typography color="white" variant="caption">
+                  Chats
+                </Typography>
+              )}
             </Box>
           </Box>
         </Box>
