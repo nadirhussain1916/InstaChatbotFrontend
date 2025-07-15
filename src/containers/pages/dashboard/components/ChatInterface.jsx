@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Typography,
@@ -7,17 +7,11 @@ import {
   Button,
   Menu,
   MenuItem,
-  Modal,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
+  Chip,
   useTheme,
   useMediaQuery,
-  Chip,
 } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { Formik, Form } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import ChatMessage from './ChatMessage';
 import { NearMeRounded } from '@mui/icons-material';
@@ -39,15 +33,15 @@ function ChatInterface() {
   const { data } = useAuthorizedQuery();
   const [createChat] = useCreateChatMutation();
   const { id } = useParams();
-  console.log();
 
   const { data: chatDetail } = useGetChatDetailQuery(id);
 
-  // UI states
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
   const [chatMessages, setChatMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
   const handleAvatarClick = e => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
   const handleAppLogout = () => {
@@ -56,14 +50,23 @@ function ChatInterface() {
     window.location.reload();
   };
 
-  // Populate chatMessages from chatDetail on load/refresh
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [chatMessages]);
+
   const latestAIIndex = chatMessages?.map(m => m.type).lastIndexOf('ai');
-  console.log('latestAIInde', latestAIIndex);
-  
-  React.useEffect(() => {
-    if (Array.isArray(chatDetail?.messages) && chatDetail?.messages?.length > 0) {
+
+  useEffect(() => {
+    if (Array.isArray(chatDetail?.messages) && chatDetail?.messages.length > 0) {
       setChatMessages(
-        chatDetail?.messages?.map(msg => ({
+        chatDetail.messages.map(msg => ({
           id: msg.id,
           content: msg.message,
           type: msg.sender === 'user' ? 'user' : 'ai',
@@ -82,30 +85,43 @@ function ChatInterface() {
 
     try {
       const payload = {
-        prompt: values?.description,
+        prompt: values.description,
         thread_id: id || '',
       };
-      console.log('payload', payload);
 
       const resp = await createChat(payload);
-      console.log('resp', resp);
+      const slidesRaw = resp?.data?.response;
 
       const botMessages = [];
-      const slidesRaw = resp?.data?.response;
-      console.log('slidesRaw', slidesRaw);
 
       if (Array.isArray(slidesRaw)) {
-        slidesRaw.forEach((slide, idx) =>
-          botMessages.push({ id: Date.now() + idx + 1, content: slide, type: 'ai', timestamp: new Date().toLocaleTimeString() })
-        );
+        slidesRaw.forEach((slide, idx) => {
+          botMessages.push({
+            id: Date.now() + idx + 1,
+            content: slide,
+            type: 'ai',
+            timestamp: new Date().toLocaleTimeString(),
+          });
+        });
       } else if (typeof slidesRaw === 'string') {
-        botMessages.push({ id: Date.now() + 1, content: slidesRaw, type: 'ai', timestamp: new Date().toLocaleTimeString() });
+        botMessages.push({
+          id: Date.now() + 1,
+          content: slidesRaw,
+          type: 'ai',
+          timestamp: new Date().toLocaleTimeString(),
+        });
       }
+
       setChatMessages(prev => [...prev, ...botMessages]);
     } catch {
       setChatMessages(prev => [
         ...prev,
-        { id: Date.now() + 1000, content: 'Something went wrong. Please try again.', type: 'ai', timestamp: new Date().toLocaleTimeString() },
+        {
+          id: Date.now() + 1000,
+          content: 'Something went wrong. Please try again.',
+          type: 'ai',
+          timestamp: new Date().toLocaleTimeString(),
+        },
       ]);
     } finally {
       setIsTyping(false);
@@ -113,7 +129,8 @@ function ChatInterface() {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height="100%" bgcolor="white">
+    <Box display="flex" flexDirection="column" height="100vh" bgcolor="white">
+      {/* Header */}
       <Box
         display="flex"
         justifyContent="flex-end"
@@ -137,7 +154,7 @@ function ChatInterface() {
                 color: 'primary.main',
                 fontWeight: 600,
                 fontSize: '0.875rem',
-                bgcolor: 'primary.light', // optional light background
+                bgcolor: 'primary.light',
                 borderRadius: 1.5,
               }}
             />
@@ -145,38 +162,39 @@ function ChatInterface() {
         </Box>
       </Box>
 
-      {/* Chat Body */}
+      {/* Messages */}
       <Box flex={1} overflow="auto" p={3}>
+        {chatMessages?.map((message, index) => {
+          const showTyping = index === latestAIIndex;
+          return (
+            <ChatMessage
+              key={message.id ?? index}
+              message={message}
+              profile={data?.profile_pic}
+              showTyping={showTyping}
+            />
+          );
+        })}
 
-{chatMessages?.map((message, index) => {
-  const showTyping = index === latestAIIndex;
+        {isTyping && (
+          <Box
+            display="flex"
+            justifyContent="flex-start"
+            mb={2}
+            border="1px solid #e0e0e0"
+            borderRadius={4}
+            boxShadow={1}
+            px={2}
+            py={1.5}
+          >
+            <Typography fontSize={12} color="text.secondary">
+              AI is typing...
+            </Typography>
+          </Box>
+        )}
 
-  return (
-    <ChatMessage
-      key={message.id ?? index}
-      message={message}
-      profile={data?.profile_pic}
-      showTyping={showTyping}
-    />
-  );
-})}
-  {isTyping && (
-    <Box
-      display="flex"
-      justifyContent="flex-start"
-      mb={2}
-      border="1px solid #e0e0e0"
-      borderRadius={4}
-      boxShadow={1}
-      px={2}
-      py={1.5}
-    >
-      <Typography fontSize={12} color="text.secondary">
-        AI is typing...
-      </Typography>
-    </Box>
-  )}
-</Box>
+        <div ref={messagesEndRef} />
+      </Box>
 
       {/* Input */}
       <Box p={3} borderTop="1px solid #e0e0e0">
@@ -188,9 +206,10 @@ function ChatInterface() {
           {({ values, errors, touched, handleChange }) => (
             <Form>
               <Box display="flex" alignItems="center" gap={2}>
-                <Box flex={1} position="relative">
+                <Box flex={1}>
                   <TextField
                     fullWidth
+                    multiline
                     minRows={1}
                     maxRows={4}
                     name="description"
@@ -201,13 +220,13 @@ function ChatInterface() {
                     helperText={touched.description && errors.description}
                     sx={{
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#a855f7', // default border color
+                        borderColor: '#a855f7',
                       },
                       '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ec4899', // border color on hover
+                        borderColor: '#ec4899',
                       },
                       '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#fb923c', // border color on focus
+                        borderColor: '#fb923c',
                       },
                     }}
                   />

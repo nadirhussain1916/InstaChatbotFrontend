@@ -40,8 +40,22 @@ function ChatMessage({ message, profile, showTyping = false }) {
     return () => clearInterval(interval);
   }, [message.id, fullText, isUser, showTyping]);
 
+  // Scroll message into view when typedText changes (typing effect or full text)
+  // useEffect(() => {
+  //   if (messageRef.current) {
+  //     messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  //   }
+  // }, [typedText]);
+
+  // useEffect(() => {
+  //   if (isTyping && messageRef.current) {
+  //     messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  //   }
+  // }, [isTyping]);
+
   return (
     <Box
+      // ref={messageRef}
       display="flex"
       justifyContent={isUser ? 'flex-end' : 'flex-start'}
       mb={2}

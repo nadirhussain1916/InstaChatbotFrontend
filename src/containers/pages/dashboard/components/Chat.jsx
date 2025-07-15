@@ -1,6 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Button, TextField, CircularProgress, Chip, Menu, MenuItem, Avatar, useTheme, useMediaQuery } from '@mui/material';
+import {
+  Box, Typography, Button, TextField, CircularProgress, Chip, Menu, MenuItem, Avatar, useTheme, useMediaQuery
+} from '@mui/material';
 import { chatFlowJson } from '../utilis/data';
 import useAuth from '@/hooks/useAuth';
 import { useAuthorizedQuery } from '@/services/private/auth';
@@ -10,12 +12,13 @@ import { Form, Formik } from 'formik';
 import { NearMeRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useCreateChatMutation } from '@/services/private/chat';
+import EmailIcon from '@mui/icons-material/Email';
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import MovieIcon from '@mui/icons-material/Movie'; // for Reel
 
 function Chat() {
-  // Chat message structure: { id, text, sender, options? }
   const [messages, setMessages] = useState([]);
   const [conversationState, setConversationState] = useState({ step: 'greeting' });
-  console.log('Chat flow initialized with state:', conversationState);
   const [answers, setAnswers] = useState({});
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -35,14 +38,12 @@ function Chat() {
     window.location.reload();
   };
 
-  // Scroll chat to bottom on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Start with initial greeting
   useEffect(() => {
-    const greetingText = chatFlowJson.content_creator.greeting.replace('FIRSTNAME', 'User');
+    const greetingText = chatFlowJson.content_creator.greeting;
     addMessage({
       id: 'bot-1',
       text: greetingText,
@@ -63,86 +64,38 @@ function Chat() {
     }, delay);
   }
 
-  // Find type data by content type string
   function findTypeData(typeStr) {
     return chatFlowJson.content_creator.types.find(t => t.type === typeStr);
   }
 
-  // Main conversation logic based on conversationState.step
   function processInput(input) {
-    const { step, contentType, goal } = conversationState;
+    const { step } = conversationState;
 
     switch (step) {
-      case 'greeting':
+      case 'greeting': {
         setAnswers({});
         setAnswers(ans => ({ ...ans, contentType: input }));
         setConversationState({ step: 'contentTypeSelected', contentType: input });
-        // After user selects content type, show first question(s)
+
         simulateTyping(() => {
           const typeData = findTypeData(input);
-          if (!typeData) {
+          if (!typeData || !typeData.followup) {
             addMessage({ id: `bot-error`, text: `Sorry, no data found for ${input}`, sender: 'bot' });
             return;
           }
-          // Show first goal options for selected type
-          const goals = typeData.options.map(opt => opt.goal);
+
           addMessage({
-            id: 'bot-2',
-            text: `Great! What's the goal for this ${input}?`,
-            sender: 'bot',
-            options: goals
+            id: 'bot-followup',
+            text: typeData.followup.message,
+            sender: 'bot'
           });
-          setConversationState(cs => ({ ...cs, step: 'goalSelection', contentType: input }));
+
+          setConversationState(cs => ({ ...cs, step: 'description' }));
         });
-        break;
-
-      case 'goalSelection':
-        setAnswers(ans => ({ ...ans, goal: input }));
-        setConversationState(cs => ({ ...cs, goal: input }));
-        // Find followup questions for selected goal
-        simulateTyping(() => {
-          const typeData = findTypeData(contentType);
-          if (!typeData) return;
-          const goalData = typeData.options.find(o => o.goal === input);
-          if (!goalData) return;
-          // If goalData has followups, ask first followup question, else go to description
-          if (goalData.followups && goalData.followups.length > 0) {
-            const firstQ = goalData.followups[0];
-            addMessage({ id: 'bot-3', text: firstQ.question, sender: 'bot', options: firstQ.options, type: firstQ.type });
-            setConversationState(cs => ({ ...cs, step: 'followup', contentType, goal, followupIndex: 0, followups: goalData.followups }));
-          } else {
-            setConversationState(cs => ({ ...cs, step: 'description' }));
-            addMessage({ id: 'bot-3', text: `Please enter a description for your ${contentType}.`, sender: 'bot' });
-          }
-        });
-        break;
-
-      case 'followup': {
-        // Save answer for current followup
-        const { followups = [], followupIndex = 0 } = conversationState;
-        const currentQ = followups[followupIndex];
-        setAnswers(ans => ({ ...ans, [currentQ.question]: input }));
-
-        const nextIndex = followupIndex + 1;
-        if (nextIndex < followups.length) {
-          // Ask next followup question
-          simulateTyping(() => {
-            const nextQ = followups[nextIndex];
-            addMessage({ id: `bot-fu-${nextIndex}`, text: nextQ.question, sender: 'bot', options: nextQ.options, type: nextQ.type });
-            setConversationState(cs => ({ ...cs, followupIndex: nextIndex }));
-          });
-        } else {
-          // No more followups, go to description input
-          simulateTyping(() => {
-            addMessage({ id: 'bot-desc', text: `Almost done! Please enter a description for your ${contentType}.`, sender: 'bot' });
-            setConversationState(cs => ({ ...cs, step: 'description' }));
-          });
-        }
         break;
       }
 
       case 'description':
-        // User finished all Qs, time to submit
         setAnswers(ans => ({ ...ans, description: input }));
         setConversationState(cs => ({ ...cs, step: 'complete' }));
         addMessage({ id: 'bot-complete', text: 'Thanks! You can now submit your prompt.', sender: 'bot' });
@@ -156,19 +109,12 @@ function Chat() {
   function handleOptionClick(option) {
     addMessage({ id: `user-${Date.now()}`, text: option, sender: 'user' });
     processInput(option);
-
   }
-  const lastBotMessage = [...messages].reverse().find(m => m.sender === 'bot' && m.options?.length > 0);
-  console.log('Last bot message options:', lastBotMessage?.options);
 
+  const lastBotMessage = [...messages].reverse().find(m => m.sender === 'bot' && m.options?.length > 0);
+  console.log(lastBotMessage);
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       {/* Header */}
       <Box
         display="flex"
@@ -193,7 +139,7 @@ function Chat() {
                 color: 'primary.main',
                 fontWeight: 600,
                 fontSize: '0.875rem',
-                bgcolor: 'primary.light', // optional light background
+                bgcolor: 'primary.light',
                 borderRadius: 1.5,
               }}
             />
@@ -202,13 +148,7 @@ function Chat() {
       </Box>
 
       {/* Messages */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: 'auto',
-          p: 3,
-        }}
-      >
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3 }}>
         {messages.map(msg => (
           <Box
             key={msg.id}
@@ -238,7 +178,10 @@ function Chat() {
 
             <Box
               sx={{
-                background: msg.sender === 'user' ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)' : 'grey.200',
+                background:
+                  msg.sender === 'user'
+                    ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)'
+                    : 'grey.200',
                 color: msg.sender === 'user' ? 'white' : 'text.primary',
                 px: 2,
                 py: 1.25,
@@ -247,22 +190,76 @@ function Chat() {
                 whiteSpace: 'pre-line',
               }}
             >
-              <Typography variant="body1">{msg.text}</Typography>
-              {/* Show options buttons if any */}
+              <Typography
+                variant="h6"
+                sx={{
+                  background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 600,
+                }}
+              >
+                HI {data?.full_name || data?.username} {msg.text}
+              </Typography>
+
               {msg.options && (
-                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {msg.options.map((opt, i) => (
-                    <Button
-                      key={i}
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleOptionClick(opt)}
-                    >
-                      {opt}
-                    </Button>
-                  ))}
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: 'flex',
+                    gap: 2,
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {msg.options.map((opt, i) => {
+                    const iconMap = {
+                      Carousel: <ViewCarouselIcon sx={{ fontSize: 36 }} />,
+                      Reel: <MovieIcon sx={{ fontSize: 36 }} />,
+                      Email: <EmailIcon sx={{ fontSize: 36 }} />,
+                    };
+
+                    const colorMap = {
+                      Carousel: 'linear-gradient(135deg, #ec4899, #fb923c)',
+                      Reel: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                      Email: 'linear-gradient(135deg, #14b8a6, #22d3ee)',
+                    };
+
+                    return (
+                      <Box
+                        key={i}
+                        onClick={() => handleOptionClick(opt)}
+                        sx={{
+                          cursor: 'pointer',
+                          width: 120,
+                          height: 120,
+                          p: 2,
+                          borderRadius: 4,
+                          textAlign: 'center',
+                          color: 'white',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: colorMap[opt] || 'linear-gradient(135deg, #ddd, #ccc)',
+                          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                          },
+                        }}
+                      >
+                        {iconMap[opt] || '📄'}
+                        <Typography fontWeight={600} mt={1} fontSize={16}>
+                          {opt}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
                 </Box>
               )}
+
             </Box>
 
             {msg.sender === 'user' && (
@@ -279,16 +276,12 @@ function Chat() {
                   ml: 1,
                 }}
               >
-                <Avatar
-                  src={`${API_URL}${data?.profile_pic}`}
-
-                />
+                <Avatar src={`${API_URL}${data?.profile_pic}`} />
               </Box>
             )}
           </Box>
         ))}
 
-        {/* Typing indicator */}
         {isTyping && (
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <Box
@@ -325,14 +318,16 @@ function Chat() {
 
         <div ref={messagesEndRef} />
       </Box>
+
+      {/* Description Form */}
       <Box p={3} borderTop="1px solid #e0e0e0">
         <Formik
           initialValues={{ description: '' }}
-          onSubmit={ async values => {
+          onSubmit={async values => {
             const payload = {
-              new_chat: { ...answers, description: values.description },
+              new_chat: { ...answers },
               prompt: values.description,
-              threadid: '', // You can fill this dynamically
+              threadid: '',
             };
             const response = await createChat(payload);
             if (response?.data) {
@@ -356,13 +351,13 @@ function Chat() {
                     helperText={touched.description && errors.description}
                     sx={{
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#a855f7', // default border color
+                        borderColor: '#a855f7',
                       },
                       '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ec4899', // border color on hover
+                        borderColor: '#ec4899',
                       },
                       '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#fb923c', // border color on focus
+                        borderColor: '#fb923c',
                       },
                     }}
                   />
@@ -381,7 +376,7 @@ function Chat() {
                     },
                   }}
                 >
-                 {isLoading ? <CircularProgress size={24} /> : <NearMeRounded />}
+                  {isLoading ? <CircularProgress size={24} /> : <NearMeRounded />}
                 </Button>
               </Box>
             </Form>
