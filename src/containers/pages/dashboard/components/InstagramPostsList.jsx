@@ -21,7 +21,19 @@ import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLo
 import { truncateMessage } from '@/utilities/helpers';
 
 function InstagramPostsList() {
-  const { data: mockInstagramPosts = [], isLoading } = useGetUserPostQuery();
+  const [enableQuery, setEnableQuery] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEnableQuery(true);
+    }, 4000); // 4 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const { data: mockInstagramPosts = [], isLoading } = useGetUserPostQuery(undefined, {
+    skip: !enableQuery,
+  });
   const { data: previousChat = [] } = useGetPreviousChatQuery();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -52,10 +64,8 @@ function InstagramPostsList() {
 
     try {
       const resp = await createChat(payload);
-
-      navigate('/', {
-        state: { chatResponse: resp.data },
-      });
+      localStorage.setItem('thread_id', resp?.data?.thread_id);
+      navigate('/');
     } catch (error) {
       console.error('Error creating chat:', error);
     }
@@ -186,223 +196,229 @@ function InstagramPostsList() {
           </Box>
         </Box>
       </Box>
-
-      {/* Content */}
-      <Box
-        sx={{
-          flex: 1,
-          overflowY: 'auto',
-          px: isMobile ? 2 : 3,
-          pb: 3,
-          '&::-webkit-scrollbar': {
-            width: '3px',
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#f3f4f6',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#a855f7',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-thumb:hover': {
-            backgroundColor: '#9333ea',
-          },
-        }}
-      >
-        {isLoading ? (
+    {/* Content */}
+    <Box
+      sx={{
+        flex: 1,
+        overflowY: 'auto',
+        px: isMobile ? 2 : 3,
+        pb: 3,
+        '&::-webkit-scrollbar': {
+          width: '3px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: '#f3f4f6',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#a855f7',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: '#9333ea',
+        },
+      }}
+    >
+      {view === 'posts' ? (
+        !enableQuery ? (
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Typography variant="body1" color="text.secondary" fontWeight={500}>
+              Posts are loading...
+            </Typography>
+          </Box>
+        ) : isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <SectionSkeletonLoader />
           </Box>
-        ) : view === 'posts' ? (
-          <>
-            {mockInstagramPosts.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 6 }}>
-                <Typography variant="body1" color="text.secondary" fontWeight={500}>
-                  No top post available
-                </Typography>
-              </Box>
-            ) : (
-              <><Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  py: 1.5,
-                  mt: 2.1,
-                  fontSize: '1rem',
-                  '&:hover': {
-                    background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
-                  },
-                }}
-              >
-                Top Posts
-              </Button><Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
-                  {mockInstagramPosts.map((post, index) => (
-                    <Box key={post.id} sx={{ position: 'relative' }}>
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: -8,
-                          left: -8,
-                          zIndex: 10,
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          background: 'linear-gradient(to right, #ec4899, #f97316)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
-                        >
-                          {index + 1}
-                        </Typography>
-                      </Box>
-                      <InstagramPost post={post} />
-                    </Box>
-                  ))}
-                </Box></>
-            )}
-          </>
+        ) : mockInstagramPosts.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Typography variant="body1" color="text.secondary" fontWeight={500}>
+              No top post available
+            </Typography>
+          </Box>
         ) : (
           <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 3 }}>
-              <Button
-                onClick={handleClickNewChat}
-                variant="contained"
-                fullWidth
-                sx={{
-                  background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                  color: '#fff',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  mb: 2,
-                  '&:hover': {
-                    background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
-                  },
-                }}
-              >
-                {loading ? (
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    + New Chat
-                  </Box>
-                ) : (
-                  '+ New Chat'
-                )}
-              </Button>
-              {chats.map((chat, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    px: 2,
-                    py: 1.5,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    '&:hover': {
-                      bgcolor: '#f3f4f6',
-                    },
-                    position: 'relative',
-                  }}
-                  onClick={() => {
-                    if (editingIndex === index) return;
-                    navigate(`/new-chat/${chat?.thread_id}`);
-                  }}
-                >
-                  {/* Chat name or input for rename */}
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    {editingIndex === index ? (
-                      <TextField
-                        value={editValue}
-                        onChange={handleRenameChange}
-                        onClick={e => e.stopPropagation()}
-                        onBlur={() => handleRenameSubmit(index)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleRenameSubmit(chat?.thread_id);
-                          if (e.key === 'Escape') setEditingIndex(null);
-                        }}
-                        size="small"
-                        autoFocus
-                        fullWidth
-                        inputProps={{
-                          style: {
-                            fontWeight: 500,
-                            fontSize: '0.95rem',
-                            color: '#111827',
-                          },
-                        }}
-                      />
-                    ) : (
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontWeight: 500,
-                          color: '#111827',
-                          fontSize: '0.95rem',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {truncateMessage(chat?.title, 30) || 'New conversation'}
-                      </Typography>
-                    )}
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{
+                background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                color: '#fff',
+                fontWeight: 600,
+                textTransform: 'none',
+                borderRadius: 2,
+                py: 1.5,
+                mt: 2.1,
+                fontSize: '1rem',
+                '&:hover': {
+                  background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
+                },
+              }}
+            >
+              Top Posts
+            </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
+              {mockInstagramPosts.map((post, index) => (
+                <Box key={post.id} sx={{ position: 'relative' }}>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: -8,
+                      left: -8,
+                      zIndex: 10,
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(to right, #ec4899, #f97316)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
                     <Typography
                       variant="caption"
+                      sx={{ color: '#fff', fontWeight: 'bold', fontSize: '0.75rem' }}
+                    >
+                      {index + 1}
+                    </Typography>
+                  </Box>
+                  <InstagramPost post={post} />
+                </Box>
+              ))}
+            </Box>
+          </>
+        )
+      ) : (
+        <>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 3 }}>
+            <Button
+              onClick={handleClickNewChat}
+              variant="contained"
+              fullWidth
+              sx={{
+                background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                color: '#fff',
+                fontWeight: 600,
+                textTransform: 'none',
+                borderRadius: 2,
+                py: 1.5,
+                fontSize: '1rem',
+                mb: 2,
+                '&:hover': {
+                  background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
+                },
+              }}
+            >
+              {loading ? (
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CircularProgress size={20} sx={{ color: '#fff' }} />
+                  + New Chat
+                </Box>
+              ) : (
+                '+ New Chat'
+              )}
+            </Button>
+
+            {/* Chat List */}
+            {chats.map((chat, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  px: 2,
+                  py: 1.5,
+                  borderRadius: 2,
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: '#f3f4f6' },
+                  position: 'relative',
+                }}
+                onClick={() => {
+                  if (editingIndex === index) return;
+                  navigate(`/new-chat/${chat?.thread_id}`);
+                }}
+              >
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  {editingIndex === index ? (
+                    <TextField
+                      value={editValue}
+                      onChange={handleRenameChange}
+                      onClick={e => e.stopPropagation()}
+                      onBlur={() => handleRenameSubmit(index)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleRenameSubmit(chat?.thread_id);
+                        if (e.key === 'Escape') setEditingIndex(null);
+                      }}
+                      size="small"
+                      autoFocus
+                      fullWidth
+                      inputProps={{
+                        style: {
+                          fontWeight: 500,
+                          fontSize: '0.95rem',
+                          color: '#111827',
+                        },
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="body1"
                       sx={{
-                        color: '#6b7280',
-                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        color: '#111827',
+                        fontSize: '0.95rem',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      {chat?.created_at
-                        ? new Date(chat.created_at).toLocaleString()
-                        : 'Recently'}
+                      {truncateMessage(chat?.title, 30) || 'New conversation'}
                     </Typography>
-                  </Box>
-                  {/* Three-dot menu */}
-                  <IconButton
-                    size="small"
-                    sx={{ ml: 1 }}
-                    onClick={e => handleMenuOpen(e, index)}
+                  )}
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: '#6b7280',
+                      fontSize: '0.75rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
                   >
-                    <MoreVertIcon fontSize="small" />
-                  </IconButton>
-                  {/* Menu for options */}
-                  <Menu
-                    anchorEl={menuAnchorEl}
-                    open={menuIndex === index}
-                    onClose={handleMenuClose}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <MenuItem onClick={() => handleRename(index)}>Rename</MenuItem>
-                    <MenuItem onClick={() => handleDelete(chat?.thread_id)} sx={{ color: 'red' }}>Delete</MenuItem>
-                  </Menu>
+                    {chat?.created_at
+                      ? new Date(chat.created_at).toLocaleString()
+                      : 'Recently'}
+                  </Typography>
                 </Box>
-              ))}
-            </Box>
-          </>
-        )}
-      </Box>
+                <IconButton
+                  size="small"
+                  sx={{ ml: 1 }}
+                  onClick={e => handleMenuOpen(e, index)}
+                >
+                  <MoreVertIcon fontSize="small" />
+                </IconButton>
+                <Menu
+                  anchorEl={menuAnchorEl}
+                  open={menuIndex === index}
+                  onClose={handleMenuClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MenuItem onClick={() => handleRename(index)}>Rename</MenuItem>
+                  <MenuItem onClick={() => handleDelete(chat?.thread_id)} sx={{ color: 'red' }}>
+                    Delete
+                  </MenuItem>
+                </Menu>
+              </Box>
+            ))}
+          </Box>
+        </>
+      )}
     </Box>
-  );
+  </Box>
+);
+
 }
 
 export default InstagramPostsList;

@@ -10,8 +10,8 @@ import { API_URL } from '@/utilities/constants';
 import { truncateUserName } from '@/utilities/helpers';
 import { Form, Formik } from 'formik';
 import { NearMeRounded } from '@mui/icons-material';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useCreateChatMutation } from '@/services/private/chat';
+import { useNavigate } from 'react-router-dom';
+import { useCreateChatMutation, useGetChatDetailQuery } from '@/services/private/chat';
 import EmailIcon from '@mui/icons-material/Email';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import MovieIcon from '@mui/icons-material/Movie'; // for Reel
@@ -28,9 +28,9 @@ function Chat() {
   const { handleLogout } = useAuth();
   const { data } = useAuthorizedQuery();
   const [createChat, { isLoading }] = useCreateChatMutation();
-  const location = useLocation();
-  const chatData = location.state?.chatResponse;
-  console.log(chatData);
+   const savedThreadId = localStorage.getItem('thread_id');
+const { data: chatDetail } = useGetChatDetailQuery(savedThreadId || '');
+  console.log(chatDetail);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -173,7 +173,7 @@ function Chat() {
               fontWeight: 400,
             }}
           >
-            {chatData?.response}
+            {chatDetail?.messages?.[0]?.message}
           </Typography>
           </Box>
           {messages.map(msg => (
@@ -220,13 +220,14 @@ function Chat() {
                 <Typography
                   variant="h6"
                   sx={{
-                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    fontWeight: 600,
+                    background:
+                    msg.sender === 'user'
+                      ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)'
+                      : 'grey.200',
+                    fontWeight: 400,
                   }}
                 >
-                  HI {data?.full_name || data?.username} {msg.text}
+                   {msg.text}
                 </Typography>
 
                 {msg.options && (

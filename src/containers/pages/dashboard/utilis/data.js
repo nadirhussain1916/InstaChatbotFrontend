@@ -1,6 +1,6 @@
 export const chatFlowJson = {
   content_creator: {
-    greeting: ",what would you like to create today?",
+    greeting: "Hi what would you like to create today?",
     types: [
       {
         type: "Carousel",

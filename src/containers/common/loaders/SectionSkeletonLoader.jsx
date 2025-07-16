@@ -9,8 +9,12 @@ function SectionSkeletonLoader({ containerHeight }) {
       className="my-3 container-max-width w-100 container"
       sx={{ height: `${containerHeight}`, ...mainContainerStyles }}
     >
-      <Skeleton variant="rectangular" animation="wave" className="h-75" />
-      <Skeleton animation="wave" className="h-25" />
+      <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+
+{/* For other variants, adjust the size with `width` and `height` */}
+<Skeleton variant="circular" width={40} height={40} />
+<Skeleton variant="rectangular" width={210} height={60} />
+<Skeleton variant="rounded" width={210} height={60} />
     </Box>
   );
 }
