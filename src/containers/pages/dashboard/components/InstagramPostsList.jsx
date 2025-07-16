@@ -10,12 +10,13 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import InstagramPost from './InstagramPost';
 import { useGetUserPostQuery } from '@/services/private/post';
-import { useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
+import { useCreateChatMutation, useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
 import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLoader';
 import { truncateMessage } from '@/utilities/helpers';
 
@@ -35,6 +36,7 @@ function InstagramPostsList() {
   const [chats, setChats] = useState(previousChat);
   const [deleteChat] = useDeleteChatMutation();
   const [updateChat] = useUpdateChatTitleMutation();
+  const [createChat, { isLoading: loading }] = useCreateChatMutation();
 
   useEffect(() => {
     setChats(previousChat);
@@ -42,7 +44,22 @@ function InstagramPostsList() {
     setEditValue(''); // Reset edit value
   }, [previousChat]);
 
-  const handleClickNewChat = () => navigate('/');
+  const handleClickNewChat = async () => {
+    const payload = {
+      thread_id: '',
+      prompt: '',
+    };
+
+    try {
+      const resp = await createChat(payload);
+
+      navigate('/', {
+        state: { chatResponse: resp.data },
+      });
+    } catch (error) {
+      console.error('Error creating chat:', error);
+    }
+  };
 
   const handleMenuOpen = (event, idx) => {
     event.stopPropagation();
@@ -276,7 +293,14 @@ function InstagramPostsList() {
                   },
                 }}
               >
-                + New Chat
+                {loading ? (
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CircularProgress size={20} sx={{ color: '#fff' }} />
+                    + New Chat
+                  </Box>
+                ) : (
+                  '+ New Chat'
+                )}
               </Button>
               {chats.map((chat, index) => (
                 <Box

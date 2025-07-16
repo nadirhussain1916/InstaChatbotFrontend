@@ -10,7 +10,7 @@ import { API_URL } from '@/utilities/constants';
 import { truncateUserName } from '@/utilities/helpers';
 import { Form, Formik } from 'formik';
 import { NearMeRounded } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCreateChatMutation } from '@/services/private/chat';
 import EmailIcon from '@mui/icons-material/Email';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
@@ -28,6 +28,9 @@ function Chat() {
   const { handleLogout } = useAuth();
   const { data } = useAuthorizedQuery();
   const [createChat, { isLoading }] = useCreateChatMutation();
+  const location = useLocation();
+  const chatData = location.state?.chatResponse;
+  console.log(chatData);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -149,16 +152,165 @@ function Chat() {
 
       {/* Messages */}
       <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3 }}>
-        {messages.map(msg => (
-          <Box
-            key={msg.id}
+        <Box
+          sx={{
+            background: 'white',
+            color: 'text.primary',
+            px: 2,
+            py: 1.25,
+            borderRadius: 2,
+            maxWidth: '100%',
+            whiteSpace: 'pre-line',
+            mb:5
+          }}
+        >
+          <Typography
+            variant="12px"
             sx={{
-              display: 'flex',
-              justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-              mb: 1,
+              background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 400,
             }}
           >
-            {msg.sender === 'bot' && (
+            {chatData?.response}
+          </Typography>
+          </Box>
+          {messages.map(msg => (
+            <Box
+              key={msg.id}
+              sx={{
+                display: 'flex',
+                justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                mb: 1,
+              }}
+            >
+              {msg.sender === 'bot' && (
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: 'primary.main',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: 'white',
+                    mr: 1,
+                  }}
+                >
+                  <Avatar>Ai</Avatar>
+                </Box>
+              )}
+
+              <Box
+                sx={{
+                  background:
+                    msg.sender === 'user'
+                      ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)'
+                      : 'grey.200',
+                  color: msg.sender === 'user' ? 'white' : 'text.primary',
+                  px: 2,
+                  py: 1.25,
+                  borderRadius: 2,
+                  maxWidth: '75%',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontWeight: 600,
+                  }}
+                >
+                  HI {data?.full_name || data?.username} {msg.text}
+                </Typography>
+
+                {msg.options && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      display: 'flex',
+                      gap: 2,
+                      flexWrap: 'wrap',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {msg.options.map((opt, i) => {
+                      const iconMap = {
+                        Carousel: <ViewCarouselIcon sx={{ fontSize: 36 }} />,
+                        Reel: <MovieIcon sx={{ fontSize: 36 }} />,
+                        Email: <EmailIcon sx={{ fontSize: 36 }} />,
+                      };
+
+                      const colorMap = {
+                        Carousel: 'linear-gradient(135deg, #ec4899, #fb923c)',
+                        Reel: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                        Email: 'linear-gradient(135deg, #14b8a6, #22d3ee)',
+                      };
+
+                      return (
+                        <Box
+                          key={i}
+                          onClick={() => handleOptionClick(opt)}
+                          sx={{
+                            cursor: 'pointer',
+                            width: 120,
+                            height: 120,
+                            p: 2,
+                            borderRadius: 4,
+                            textAlign: 'center',
+                            color: 'white',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: colorMap[opt] || 'linear-gradient(135deg, #ddd, #ccc)',
+                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                            '&:hover': {
+                              transform: 'scale(1.05)',
+                              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                            },
+                          }}
+                        >
+                          {iconMap[opt] || '📄'}
+                          <Typography fontWeight={600} mt={1} fontSize={16}>
+                            {opt}
+                          </Typography>
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                )}
+
+              </Box>
+
+              {msg.sender === 'user' && (
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: 'grey.400',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: 'grey.700',
+                    ml: 1,
+                  }}
+                >
+                  <Avatar src={`${API_URL}${data?.profile_pic}`} />
+                </Box>
+              )}
+            </Box>
+          ))}
+
+          {isTyping && (
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <Box
                 sx={{
                   width: 32,
@@ -174,217 +326,92 @@ function Chat() {
               >
                 <Avatar>Ai</Avatar>
               </Box>
-            )}
-
-            <Box
-              sx={{
-                background:
-                  msg.sender === 'user'
-                    ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)'
-                    : 'grey.200',
-                color: msg.sender === 'user' ? 'white' : 'text.primary',
-                px: 2,
-                py: 1.25,
-                borderRadius: 2,
-                maxWidth: '75%',
-                whiteSpace: 'pre-line',
-              }}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontWeight: 600,
-                }}
-              >
-                HI {data?.full_name || data?.username} {msg.text}
-              </Typography>
-
-              {msg.options && (
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: 'flex',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {msg.options.map((opt, i) => {
-                    const iconMap = {
-                      Carousel: <ViewCarouselIcon sx={{ fontSize: 36 }} />,
-                      Reel: <MovieIcon sx={{ fontSize: 36 }} />,
-                      Email: <EmailIcon sx={{ fontSize: 36 }} />,
-                    };
-
-                    const colorMap = {
-                      Carousel: 'linear-gradient(135deg, #ec4899, #fb923c)',
-                      Reel: 'linear-gradient(135deg, #6366f1, #a855f7)',
-                      Email: 'linear-gradient(135deg, #14b8a6, #22d3ee)',
-                    };
-
-                    return (
-                      <Box
-                        key={i}
-                        onClick={() => handleOptionClick(opt)}
-                        sx={{
-                          cursor: 'pointer',
-                          width: 120,
-                          height: 120,
-                          p: 2,
-                          borderRadius: 4,
-                          textAlign: 'center',
-                          color: 'white',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: colorMap[opt] || 'linear-gradient(135deg, #ddd, #ccc)',
-                          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                          boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                          },
-                        }}
-                      >
-                        {iconMap[opt] || '📄'}
-                        <Typography fontWeight={600} mt={1} fontSize={16}>
-                          {opt}
-                        </Typography>
-                      </Box>
-                    );
-                  })}
-                </Box>
-              )}
-
-            </Box>
-
-            {msg.sender === 'user' && (
               <Box
                 sx={{
-                  width: 32,
-                  height: 32,
-                  bgcolor: 'grey.400',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: 'grey.700',
-                  ml: 1,
+                  bgcolor: 'grey.200',
+                  px: 2,
+                  py: 1.25,
+                  borderRadius: 2,
+                  maxWidth: '75%',
+                  color: 'grey.600',
                 }}
               >
-                <Avatar src={`${API_URL}${data?.profile_pic}`} />
+                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                  Typing...
+                </Typography>
               </Box>
-            )}
-          </Box>
-        ))}
-
-        {isTyping && (
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <Box
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: 'primary.main',
-                borderRadius: '50%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'white',
-                mr: 1,
-              }}
-            >
-              <Avatar>Ai</Avatar>
             </Box>
-            <Box
-              sx={{
-                bgcolor: 'grey.200',
-                px: 2,
-                py: 1.25,
-                borderRadius: 2,
-                maxWidth: '75%',
-                color: 'grey.600',
-              }}
-            >
-              <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                Typing...
-              </Typography>
-            </Box>
-          </Box>
-        )}
+          )}
 
-        <div ref={messagesEndRef} />
-      </Box>
+          <div ref={messagesEndRef} />
+        </Box>
 
-      {/* Description Form */}
-      <Box p={3} borderTop="1px solid #e0e0e0">
-        <Formik
-          initialValues={{ description: '' }}
-          onSubmit={async values => {
-            const payload = {
-              new_chat: { ...answers },
-              prompt: values.description,
-              threadid: '',
-            };
-            const response = await createChat(payload);
-            if (response?.data) {
-              navigate(`/new-chat/${response?.data?.thread_id}`);
-            }
-          }}
-        >
-          {({ values, errors, touched, handleChange }) => (
-            <Form>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Box flex={1} position="relative">
-                  <TextField
-                    fullWidth
-                    minRows={1}
-                    maxRows={4}
-                    name="description"
-                    placeholder="Write description to create..."
-                    value={values.description}
-                    onChange={handleChange}
-                    error={touched.description && Boolean(errors.description)}
-                    helperText={touched.description && errors.description}
+        {/* Description Form */}
+        <Box p={3} borderTop="1px solid #e0e0e0">
+          <Formik
+            initialValues={{ description: '' }}
+            onSubmit={async values => {
+              const payload = {
+                new_chat: { ...answers },
+                prompt: values.description,
+                threadid: '',
+              };
+              const response = await createChat(payload);
+              if (response?.data) {
+                navigate(`/new-chat/${response?.data?.thread_id}`);
+              }
+            }}
+          >
+            {({ values, errors, touched, handleChange }) => (
+              <Form>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Box flex={1} position="relative">
+                    <TextField
+                      fullWidth
+                      minRows={1}
+                      maxRows={4}
+                      name="description"
+                      placeholder="Write description to create..."
+                      value={values.description}
+                      onChange={handleChange}
+                      error={touched.description && Boolean(errors.description)}
+                      helperText={touched.description && errors.description}
+                      sx={{
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#a855f7',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#ec4899',
+                        },
+                        '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                          borderColor: '#fb923c',
+                        },
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    type="submit"
                     sx={{
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#a855f7',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ec4899',
-                      },
-                      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#fb923c',
+                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                      color: 'white',
+                      width: 48,
+                      height: 48,
+                      minWidth: 48,
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
                       },
                     }}
-                  />
+                  >
+                    {isLoading ? <CircularProgress size={24} /> : <NearMeRounded />}
+                  </Button>
                 </Box>
-                <Button
-                  type="submit"
-                  sx={{
-                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    color: 'white',
-                    width: 48,
-                    height: 48,
-                    minWidth: 48,
-                    borderRadius: 2,
-                    '&:hover': {
-                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    },
-                  }}
-                >
-                  {isLoading ? <CircularProgress size={24} /> : <NearMeRounded />}
-                </Button>
-              </Box>
-            </Form>
-          )}
-        </Formik>
+              </Form>
+            )}
+          </Formik>
+        </Box>
       </Box>
-    </Box>
-  );
+      );
 }
 
-export default Chat;
+      export default Chat;
