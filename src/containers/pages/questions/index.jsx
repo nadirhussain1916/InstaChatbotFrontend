@@ -70,7 +70,7 @@ import { truncateUserName } from '@/utilities/helpers';
 
 function Questions() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [submitQuestion] = useAddQuestionMutation();
+  const [submitQuestion, { isLoading }] = useAddQuestionMutation();
   const { data } = useAuthorizedQuery();
     const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -159,6 +159,46 @@ function Questions() {
       setCurrentStep(currentStep - 1);
     }
   };
+const handleHelpWithSelection = value => {
+  const allAboveOption = 'Honestly? All of the above';
+  const individualOptions = helpOptions.slice(0, 4).map(option => option.text);
+  const currentValues = formData.helpWith;
+
+  if (value === allAboveOption) {
+    const allSelected = individualOptions.every(option => currentValues.includes(option));
+
+    if (allSelected) {
+      // Unselect all
+      setFormData({ ...formData, helpWith: [] });
+    } else {
+      // Select all individual options and include "All of the above"
+      setFormData({ ...formData, helpWith: [...individualOptions, allAboveOption] });
+    }
+  } else {
+    let newValues;
+
+    if (currentValues.includes(value)) {
+      // Deselect the clicked individual option
+      newValues = currentValues.filter(item => item !== value);
+    } else {
+      // Select the clicked individual option
+      newValues = [...currentValues.filter(item => item !== allAboveOption), value];
+    }
+
+    // If all individual options are selected, add "All of the above"
+    const allNowSelected = individualOptions.every(option => newValues.includes(option));
+    if (allNowSelected && !newValues.includes(allAboveOption)) {
+      newValues.push(allAboveOption);
+    }
+
+    // If not all selected, make sure "All of the above" is not included
+    if (!allNowSelected) {
+      newValues = newValues.filter(item => item !== allAboveOption);
+    }
+
+    setFormData({ ...formData, helpWith: newValues });
+  }
+};
 
   const handleMultiSelect = (field, value, maxSelection) => {
     const currentValues = formData[field];
@@ -400,41 +440,52 @@ function Questions() {
                 </Typography>
               </Box>
               <Box className="d-grid gap-3">
-                {helpOptions.map(option => (
-                  <Button
-                    key={option.text}
-                    variant={formData.helpWith.includes(option.text) ? "contained" : "outlined"}
-                    onClick={() => handleMultiSelect('helpWith', option.text)}
-                    startIcon={option.icon}
-                    endIcon={formData.helpWith.includes(option.text) ? <Check /> : null}
-                    sx={{
-                      justifyContent: 'flex-start',
-                      textAlign: 'left',
-                      py: 2,
-                      px: 3,
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      ...(formData.helpWith.includes(option.text) 
-                        ? {
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                            color: 'white',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
+                {helpOptions.map(option => {
+                  const allAboveOption = 'Honestly? All of the above';
+                  const individualOptions = helpOptions.slice(0, 4).map(opt => opt.text);
+                  
+                  // For "All of the above" button - show as selected if all individual options are selected
+                  const isAllAboveSelected = option.text === allAboveOption && 
+                    individualOptions.every(indOpt => formData.helpWith.includes(indOpt));
+                  
+                  // For individual options - show as selected if they're in the array
+                  const isIndividualSelected = option.text !== allAboveOption && 
+                    formData.helpWith.includes(option.text);
+                  
+                  const isSelected = isAllAboveSelected || isIndividualSelected;
+                  
+                  return (
+                    <Button
+                      key={option.text}
+                      variant={isSelected ? "contained" : "outlined"}
+                      onClick={() => handleHelpWithSelection(option.text)}
+                      startIcon={option.icon}
+                      endIcon={isSelected ? <Check /> : null}
+                      sx={{
+                        justifyContent: 'flex-start',
+                        textAlign: 'left',
+                        py: 2,
+                        px: 3,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        ...(isSelected 
+                          ? {
+                              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                              color: 'white',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
+                              }
                             }
-                          }
-                        : {
-                            borderColor: '#8b5cf6',
-                            color: '#8b5cf6',
-                            // '&:hover': {
-                            //   borderColor: '#7c3aed',
-                            //   backgroundColor: '#f3f4f6'
-                            // }
-                          })
-                    }}
-                  >
-                    {option.text}
-                  </Button>
-                ))}
+                          : {
+                              borderColor: '#8b5cf6',
+                              color: '#8b5cf6',
+                            })
+                      }}
+                    >
+                      {option.text}
+                    </Button>
+                  );
+                })}
               </Box>
             </Box>
 
@@ -631,10 +682,6 @@ function Questions() {
                   textTransform: 'none',
                   borderColor: '#6c757d',
                   color: '#6c757d',
-                  // '&:hover': {
-                  //   borderColor: '#495057',
-                  //   backgroundColor: '#f8f9fa'
-                  // }
                 }}
               >
                 Back
@@ -808,10 +855,6 @@ function Questions() {
                   borderColor: '#8b5cf6',
                   color: '#8b5cf6',
                   textTransform: 'none',
-                  // '&:hover': {
-                  //   borderColor: '#7c3aed',
-                  //   backgroundColor: '#f3f4f6'
-                  // }
                 }}
               >
                 Add another offer
@@ -831,10 +874,6 @@ function Questions() {
                   textTransform: 'none',
                   borderColor: '#6c757d',
                   color: '#6c757d',
-                  // '&:hover': {
-                  //   borderColor: '#495057',
-                  //   backgroundColor: '#f8f9fa'
-                  // }
                 }}
               >
                 Back
@@ -923,10 +962,6 @@ function Questions() {
                           : {
                               borderColor: '#8b5cf6',
                               color: '#8b5cf6',
-                              // '&:hover': {
-                              //   borderColor: '#7c3aed',
-                              //   backgroundColor: '#f3f4f6'
-                              // }
                             })
                       }}
                     >
@@ -997,10 +1032,6 @@ function Questions() {
                   textTransform: 'none',
                   borderColor: '#6c757d',
                   color: '#6c757d',
-                  // '&:hover': {
-                  //   borderColor: '#495057',
-                  //   backgroundColor: '#f8f9fa'
-                  // }
                 }}
               >
                 Back
@@ -1203,10 +1234,6 @@ function Questions() {
                   textTransform: 'none',
                   borderColor: '#6c757d',
                   color: '#6c757d',
-                  // '&:hover': {
-                  //   borderColor: '#495057',
-                  //   backgroundColor: '#f8f9fa'
-                  // }
                 }}
               >
                 Back
@@ -1304,10 +1331,6 @@ function Questions() {
                       padding: 2,
                       border: '2px solid #e9ecef',
                       borderRadius: 2,
-                      // '&:hover': {
-                      //   borderColor: '#8b5cf6',
-                      //   backgroundColor: '#f8f9fa'
-                      // }
                     }}
                   />
                 ))}
@@ -1390,21 +1413,20 @@ function Questions() {
                   textTransform: 'none',
                   borderColor: '#6c757d',
                   color: '#6c757d',
-                  // '&:hover': {
-                  //   borderColor: '#495057',
-                  //   backgroundColor: '#f8f9fa'
-                  // }
                 }}
               >
                 Back
               </Button>
               <Button
+               disabled={isLoading}
                 variant="contained"
                 onClick={() => {
                   const output = generateOutput();
-                  submitQuestion(output).unwrap();
-                  dispatch(updateUserDetail({ has_answered: true }));
-                  navigate("/");
+                  const resp = submitQuestion(output).unwrap();
+                  if(resp){
+                    dispatch(updateUserDetail({ has_answered: true }));
+                    navigate("/");
+                  }
                 }}
                 startIcon={<Favorite />}
                 endIcon={<Check />}
@@ -1422,7 +1444,7 @@ function Questions() {
                   }
                 }}
               >
-                Finish Setup
+               {isLoading ? 'submitting...': 'Finish Setup'}
               </Button>
             </Box>
           </Box>
