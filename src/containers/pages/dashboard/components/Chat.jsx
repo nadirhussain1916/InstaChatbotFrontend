@@ -11,10 +11,11 @@ import { truncateUserName } from '@/utilities/helpers';
 import { Form, Formik } from 'formik';
 import { NearMeRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { useCreateChatMutation, useGetChatDetailQuery } from '@/services/private/chat';
+import { useCreateChatMutation } from '@/services/private/chat';
 import EmailIcon from '@mui/icons-material/Email';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import MovieIcon from '@mui/icons-material/Movie'; // for Reel
+import { useGetQuestionRespQuery } from '@/services/private/questions';
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -28,9 +29,8 @@ function Chat() {
   const { handleLogout } = useAuth();
   const { data } = useAuthorizedQuery();
   const [createChat, { isLoading }] = useCreateChatMutation();
-   const savedThreadId = localStorage.getItem('thread_id');
-const { data: chatDetail } = useGetChatDetailQuery(savedThreadId || '');
-  console.log(chatDetail);
+const { data: aiResp, isLoading:loadingQuestions } = useGetQuestionRespQuery();
+  console.log(aiResp);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -158,14 +158,14 @@ const { data: chatDetail } = useGetChatDetailQuery(savedThreadId || '');
             color: 'text.primary',
             px: 2,
             py: 1.25,
-            borderRadius: 2,
+            borderRadius: 3,
             maxWidth: '100%',
             whiteSpace: 'pre-line',
             mb:5
           }}
         >
           <Typography
-            variant="12px"
+            variant="10px"
             sx={{
               background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
               WebkitBackgroundClip: 'text',
@@ -173,7 +173,7 @@ const { data: chatDetail } = useGetChatDetailQuery(savedThreadId || '');
               fontWeight: 400,
             }}
           >
-            {chatDetail?.messages?.[0]?.message}
+           { loadingQuestions ? 'Please wait....': aiResp?.ai_response }
           </Typography>
           </Box>
           {messages.map(msg => (

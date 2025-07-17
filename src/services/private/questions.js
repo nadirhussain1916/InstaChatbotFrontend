@@ -15,9 +15,16 @@ export const authApi = privateAPI.injectEndpoints({
                 body,
             }),
         }),
+        getQuestionResp: build.query({
+            query: () => ({
+                url: 'instagram/submit-answers/',
+                method: 'GET',
+            }),
+        }),
     }),
 });
 export const {
     useGetQuestionsQuery,
     useAddQuestionMutation,
+    useGetQuestionRespQuery,
 } = authApi;

@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 import InstagramPost from './InstagramPost';
 import { useGetUserPostQuery } from '@/services/private/post';
-import { useCreateChatMutation, useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
+import { useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
 import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLoader';
 import { truncateMessage } from '@/utilities/helpers';
 
@@ -48,8 +48,6 @@ function InstagramPostsList() {
   const [chats, setChats] = useState(previousChat);
   const [deleteChat] = useDeleteChatMutation();
   const [updateChat] = useUpdateChatTitleMutation();
-  const [createChat, { isLoading: loading }] = useCreateChatMutation();
-
   useEffect(() => {
     setChats(previousChat);
     setEditingIndex(null); // Reset editing index
@@ -57,18 +55,7 @@ function InstagramPostsList() {
   }, [previousChat]);
 
   const handleClickNewChat = async () => {
-    const payload = {
-      thread_id: '',
-      prompt: '',
-    };
-
-    try {
-      const resp = await createChat(payload);
-      localStorage.setItem('thread_id', resp?.data?.thread_id);
       navigate('/');
-    } catch (error) {
-      console.error('Error creating chat:', error);
-    }
   };
 
   const handleMenuOpen = (event, idx) => {
@@ -309,14 +296,7 @@ function InstagramPostsList() {
                 },
               }}
             >
-              {loading ? (
-                <Box display="flex" alignItems="center" gap={1}>
-                  <CircularProgress size={20} sx={{ color: '#fff' }} />
                   + New Chat
-                </Box>
-              ) : (
-                '+ New Chat'
-              )}
             </Button>
 
             {/* Chat List */}
