@@ -167,9 +167,7 @@ const { data: aiResp, isLoading:loadingQuestions } = useGetQuestionRespQuery();
           <Typography
             variant="10px"
             sx={{
-              background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              color:'black',
               fontWeight: 400,
             }}
           >
