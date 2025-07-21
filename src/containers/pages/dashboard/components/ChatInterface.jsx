@@ -40,6 +40,7 @@ function ChatInterface() {
   const openMenu = Boolean(anchorEl);
   const [chatMessages, setChatMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [streamingMessageId, setStreamingMessageId] = useState(null);
   const messagesEndRef = useRef(null);
 
   const handleAvatarClick = e => setAnchorEl(e.currentTarget);
@@ -61,8 +62,6 @@ function ChatInterface() {
     return () => clearTimeout(timeout);
   }, [chatMessages]);
 
-  const latestAIIndex = chatMessages?.map(m => m.type).lastIndexOf('ai');
-
   useEffect(() => {
     if (Array.isArray(chatDetail?.messages) && chatDetail?.messages.length > 0) {
       setChatMessages(
@@ -73,6 +72,7 @@ function ChatInterface() {
           timestamp: msg.timestamp,
         }))
       );
+      setStreamingMessageId(null); // No streaming on initial load
     }
   }, [chatDetail]);
 
@@ -92,7 +92,7 @@ function ChatInterface() {
       const resp = await createChat(payload);
       const slidesRaw = resp?.data?.response;
 
-      const botMessages = [];
+      let botMessages = [];
 
       if (Array.isArray(slidesRaw)) {
         slidesRaw.forEach((slide, idx) => {
@@ -112,7 +112,14 @@ function ChatInterface() {
         });
       }
 
-      setChatMessages(prev => [...prev, ...botMessages]);
+      // Simulate streaming: set streamingMessageId to the new AI message, and add it to chatMessages
+      if (botMessages.length > 0) {
+        setChatMessages(prev => {
+          const updated = [...prev, botMessages[0]];
+          setStreamingMessageId(botMessages[0].id);
+          return updated;
+        });
+      }
     } catch {
       setChatMessages(prev => [
         ...prev,
@@ -123,6 +130,7 @@ function ChatInterface() {
           timestamp: new Date().toLocaleTimeString(),
         },
       ]);
+      setStreamingMessageId(null);
     } finally {
       setIsTyping(false);
     }
@@ -164,17 +172,14 @@ function ChatInterface() {
 
       {/* Messages */}
       <Box flex={1} overflow="auto" p={3}>
-        {chatMessages?.map((message, index) => {
-          const showTyping = index === latestAIIndex;
-          return (
-            <ChatMessage
-              key={message.id ?? index}
-              message={message}
-              profile={data?.profile_pic}
-              showTyping={showTyping}
-            />
-          );
-        })}
+        {chatMessages?.map((message, index) => (
+          <ChatMessage
+            key={message.id ?? index}
+            message={message}
+            profile={data?.profile_pic}
+            showTyping={message.id === streamingMessageId}
+          />
+        ))}
 
         {isTyping && (
           <Box

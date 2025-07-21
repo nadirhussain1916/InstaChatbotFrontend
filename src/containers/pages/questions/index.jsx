@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
@@ -72,7 +73,7 @@ function Questions() {
   const [currentStep, setCurrentStep] = useState(1);
   const [submitQuestion, { isLoading }] = useAddQuestionMutation();
   const { data } = useAuthorizedQuery();
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -93,6 +94,8 @@ function Questions() {
     consent: false,
     additionalFeatures: ''
   });
+
+  const [errors, setErrors] = useState({});
 
   const helpOptions = [
     {
@@ -148,9 +151,53 @@ function Questions() {
     }
   ];
 
+  // Validation for each step
+  const validateStep = () => {
+    let stepErrors = {};
+    switch (currentStep) {
+      case 2:
+        if (!formData.firstName.trim()) stepErrors.firstName = 'First name is required';
+        if (!formData.helpWith.length) stepErrors.helpWith = 'Please select at least one option';
+        break;
+      case 3:
+        if (!formData.brandName.trim()) stepErrors.brandName = 'Brand name is required';
+        if (!formData.brandType.trim()) stepErrors.brandType = 'Brand type is required';
+        if (!formData.industry.trim()) stepErrors.industry = 'Industry is required';
+        if (!formData.helpDescription.trim()) stepErrors.helpDescription = 'Description is required';
+        if (!formData.website.trim()) stepErrors.website = 'Website is required';
+        break;
+      case 4:
+        // Offers are optional, but if present, validate fields
+        formData.offers.forEach((offer, idx) => {
+          if (!offer.name.trim()) stepErrors[`offer_name_${offer.id}`] = 'Offer name is required';
+          if (!offer.priceModel.trim()) stepErrors[`offer_priceModel_${offer.id}`] = 'Pricing model is required';
+          if (!offer.transformation.trim()) stepErrors[`offer_transformation_${offer.id}`] = 'Transformation is required';
+        });
+        break;
+      case 5:
+        if (!formData.voiceTone.length) stepErrors.voiceTone = 'Select at least one voice tone';
+        break;
+      case 6:
+        if (!formData.originStory.trim()) stepErrors.originStory = 'Origin story is required';
+        if (!formData.challenges.trim()) stepErrors.challenges = 'Challenges are required';
+        if (!formData.wins.trim()) stepErrors.wins = 'Wins are required';
+        if (!formData.testimonials.trim()) stepErrors.testimonials = 'Testimonials are required';
+        break;
+      case 7:
+        if (!formData.additionalFeatures.trim()) stepErrors.additionalFeatures = 'This field is required';
+        break;
+      default:
+        break;
+    }
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  };
+
   const handleNext = () => {
-    if (currentStep < 7) {
-      setCurrentStep(currentStep + 1);
+    if (validateStep()) {
+      if (currentStep < 7) {
+        setCurrentStep(currentStep + 1);
+      }
     }
   };
 
@@ -159,46 +206,46 @@ function Questions() {
       setCurrentStep(currentStep - 1);
     }
   };
-const handleHelpWithSelection = value => {
-  const allAboveOption = 'Honestly? All of the above';
-  const individualOptions = helpOptions.slice(0, 4).map(option => option.text);
-  const currentValues = formData.helpWith;
+  const handleHelpWithSelection = value => {
+    const allAboveOption = 'Honestly? All of the above';
+    const individualOptions = helpOptions.slice(0, 4).map(option => option.text);
+    const currentValues = formData.helpWith;
 
-  if (value === allAboveOption) {
-    const allSelected = individualOptions.every(option => currentValues.includes(option));
+    if (value === allAboveOption) {
+      const allSelected = individualOptions.every(option => currentValues.includes(option));
 
-    if (allSelected) {
-      // Unselect all
-      setFormData({ ...formData, helpWith: [] });
+      if (allSelected) {
+        // Unselect all
+        setFormData({ ...formData, helpWith: [] });
+      } else {
+        // Select all individual options and include "All of the above"
+        setFormData({ ...formData, helpWith: [...individualOptions, allAboveOption] });
+      }
     } else {
-      // Select all individual options and include "All of the above"
-      setFormData({ ...formData, helpWith: [...individualOptions, allAboveOption] });
-    }
-  } else {
-    let newValues;
+      let newValues;
 
-    if (currentValues.includes(value)) {
-      // Deselect the clicked individual option
-      newValues = currentValues.filter(item => item !== value);
-    } else {
-      // Select the clicked individual option
-      newValues = [...currentValues.filter(item => item !== allAboveOption), value];
-    }
+      if (currentValues.includes(value)) {
+        // Deselect the clicked individual option
+        newValues = currentValues.filter(item => item !== value);
+      } else {
+        // Select the clicked individual option
+        newValues = [...currentValues.filter(item => item !== allAboveOption), value];
+      }
 
-    // If all individual options are selected, add "All of the above"
-    const allNowSelected = individualOptions.every(option => newValues.includes(option));
-    if (allNowSelected && !newValues.includes(allAboveOption)) {
-      newValues.push(allAboveOption);
-    }
+      // If all individual options are selected, add "All of the above"
+      const allNowSelected = individualOptions.every(option => newValues.includes(option));
+      if (allNowSelected && !newValues.includes(allAboveOption)) {
+        newValues.push(allAboveOption);
+      }
 
-    // If not all selected, make sure "All of the above" is not included
-    if (!allNowSelected) {
-      newValues = newValues.filter(item => item !== allAboveOption);
-    }
+      // If not all selected, make sure "All of the above" is not included
+      if (!allNowSelected) {
+        newValues = newValues.filter(item => item !== allAboveOption);
+      }
 
-    setFormData({ ...formData, helpWith: newValues });
-  }
-};
+      setFormData({ ...formData, helpWith: newValues });
+    }
+  };
 
   const handleMultiSelect = (field, value, maxSelection) => {
     const currentValues = formData[field];
@@ -316,16 +363,16 @@ const handleHelpWithSelection = value => {
               </Box>
             </Box>
 
-            <Typography variant="h2" className="fw-bold mb-4" sx={{ 
+            <Typography variant="h2" className="fw-bold mb-4" sx={{
               background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
             }}>
-               hello {truncateUserName(data?.full_name || data?.username)}
+              hello {truncateUserName(data?.full_name || data?.username)}
             </Typography>
             <Typography variant="h5" className="text-muted mb-3">
-              I am your new content partner <Typography component="span" sx={{ 
+              I am your new content partner <Typography component="span" sx={{
                 fontWeight: 'bold',
                 background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
                 WebkitBackgroundClip: 'text',
@@ -341,7 +388,7 @@ const handleHelpWithSelection = value => {
             </Typography>
             <Box className="d-flex align-items-center justify-content-center mb-4">
               <Typography variant="h4" className="me-2">👉</Typography>
-              <Typography variant="body1" sx={{ 
+              <Typography variant="body1" sx={{
                 background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -405,25 +452,28 @@ const handleHelpWithSelection = value => {
                   First, what's your first name?
                 </Typography>
               </Box>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={formData.firstName}
-                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-                placeholder="Enter your first name"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    backgroundColor: '#f8f9fa',
-                    '&:hover': {
-                      backgroundColor: 'white'
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'white'
-                    }
+            <TextField
+              fullWidth
+              required
+              variant="outlined"
+              value={formData.firstName}
+              onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+              placeholder="Enter your first name"
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  backgroundColor: '#f8f9fa',
+                  '&:hover': {
+                    backgroundColor: 'white'
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'white'
                   }
-                }}
-              />
+                }
+              }}
+            />
             </Box>
 
             <Box className="mb-4">
@@ -443,17 +493,11 @@ const handleHelpWithSelection = value => {
                 {helpOptions.map(option => {
                   const allAboveOption = 'Honestly? All of the above';
                   const individualOptions = helpOptions.slice(0, 4).map(opt => opt.text);
-                  
-                  // For "All of the above" button - show as selected if all individual options are selected
-                  const isAllAboveSelected = option.text === allAboveOption && 
+                  const isAllAboveSelected = option.text === allAboveOption &&
                     individualOptions.every(indOpt => formData.helpWith.includes(indOpt));
-                  
-                  // For individual options - show as selected if they're in the array
-                  const isIndividualSelected = option.text !== allAboveOption && 
+                  const isIndividualSelected = option.text !== allAboveOption &&
                     formData.helpWith.includes(option.text);
-                  
                   const isSelected = isAllAboveSelected || isIndividualSelected;
-                  
                   return (
                     <Button
                       key={option.text}
@@ -468,24 +512,27 @@ const handleHelpWithSelection = value => {
                         px: 3,
                         borderRadius: 2,
                         textTransform: 'none',
-                        ...(isSelected 
+                        ...(isSelected
                           ? {
-                              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                              color: 'white',
-                              '&:hover': {
-                                background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
-                              }
+                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                            color: 'white',
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
                             }
+                          }
                           : {
-                              borderColor: '#8b5cf6',
-                              color: '#8b5cf6',
-                            })
+                            borderColor: '#8b5cf6',
+                            color: '#8b5cf6',
+                          })
                       }}
                     >
                       {option.text}
                     </Button>
                   );
                 })}
+                {errors.helpWith && (
+                  <Typography color="error" variant="caption" sx={{ mt: 1 }}>{errors.helpWith}</Typography>
+                )}
               </Box>
             </Box>
 
@@ -549,10 +596,13 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   variant="outlined"
                   value={formData.brandName}
                   onChange={e => setFormData({ ...formData, brandName: e.target.value })}
                   placeholder="Enter your brand name"
+                  error={!!errors.brandName}
+                  helperText={errors.brandName}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -571,8 +621,9 @@ const handleHelpWithSelection = value => {
                     Are you a personal brand or a product-based business?
                   </Typography>
                 </Box>
-                <FormControl fullWidth>
+                <FormControl fullWidth error={!!errors.brandType}>
                   <Select
+                    required
                     value={formData.brandType}
                     onChange={e => setFormData({ ...formData, brandType: e.target.value })}
                     displayEmpty
@@ -587,6 +638,7 @@ const handleHelpWithSelection = value => {
                     <MenuItem value="personal">Personal Brand</MenuItem>
                     <MenuItem value="product">Product-Based Business</MenuItem>
                   </Select>
+                  {errors.brandType && <Typography color="error" variant="caption">{errors.brandType}</Typography>}
                 </FormControl>
               </Box>
 
@@ -599,10 +651,13 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   variant="outlined"
                   value={formData.industry}
                   onChange={e => setFormData({ ...formData, industry: e.target.value })}
                   placeholder="e.g., parenting coach, jewelry brand, Pilates app"
+                  error={!!errors.industry}
+                  helperText={errors.industry}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -623,10 +678,13 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   variant="outlined"
                   value={formData.helpDescription}
                   onChange={e => setFormData({ ...formData, helpDescription: e.target.value })}
                   placeholder="e.g., I help new moms get their babies to sleep without cry-it-out"
+                  error={!!errors.helpDescription}
+                  helperText={errors.helpDescription}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -653,10 +711,13 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   variant="outlined"
                   value={formData.website}
                   onChange={e => setFormData({ ...formData, website: e.target.value })}
                   placeholder="https://yourwebsite.com"
+                  error={!!errors.website}
+                  helperText={errors.website}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -766,10 +827,13 @@ const handleHelpWithSelection = value => {
                         </Box>
                         <TextField
                           fullWidth
+                          required
                           variant="outlined"
                           value={offer.name}
                           onChange={e => updateOffer(offer.id, 'name', e.target.value)}
                           placeholder="e.g., 1:1 coaching, course, sleep program, physical product"
+                          error={!!errors[`offer_name_${offer.id}`]}
+                          helperText={errors[`offer_name_${offer.id}`]}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 1,
@@ -798,21 +862,24 @@ const handleHelpWithSelection = value => {
                               sx={{
                                 borderRadius: '50px',
                                 textTransform: 'none',
-                                ...(offer.priceModel === model 
+                                ...(offer.priceModel === model
                                   ? {
-                                      background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                                      color: 'white'
-                                    }
+                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                                    color: 'white'
+                                  }
                                   : {
-                                      borderColor: '#8b5cf6',
-                                      color: '#8b5cf6'
-                                    })
+                                    borderColor: '#8b5cf6',
+                                    color: '#8b5cf6'
+                                  })
                               }}
                             >
                               {model.charAt(0).toUpperCase() + model.slice(1)}
                             </Button>
                           ))}
                         </Box>
+                        {errors[`offer_priceModel_${offer.id}`] && (
+                          <Typography color="error" variant="caption">{errors[`offer_priceModel_${offer.id}`]}</Typography>
+                        )}
                       </Box>
 
                       <Box className="col-12">
@@ -824,10 +891,13 @@ const handleHelpWithSelection = value => {
                         </Box>
                         <TextField
                           fullWidth
+                          required
                           variant="outlined"
                           value={offer.transformation}
                           onChange={e => updateOffer(offer.id, 'transformation', e.target.value)}
                           placeholder="Keep it clear and measurable"
+                          error={!!errors[`offer_transformation_${offer.id}`]}
+                          helperText={errors[`offer_transformation_${offer.id}`]}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 1,
@@ -951,18 +1021,18 @@ const handleHelpWithSelection = value => {
                         py: 1.5,
                         borderRadius: 2,
                         textTransform: 'none',
-                        ...(formData.voiceTone.includes(voice.text) 
+                        ...(formData.voiceTone.includes(voice.text)
                           ? {
-                              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                              color: 'white',
-                              '&:hover': {
-                                background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
-                              }
+                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                            color: 'white',
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
                             }
+                          }
                           : {
-                              borderColor: '#8b5cf6',
-                              color: '#8b5cf6',
-                            })
+                            borderColor: '#8b5cf6',
+                            color: '#8b5cf6',
+                          })
                       }}
                     >
                       {voice.text}
@@ -970,6 +1040,9 @@ const handleHelpWithSelection = value => {
                   </Grid>
                 ))}
               </Grid>
+              {errors.voiceTone && (
+                <Typography color="error" variant="caption" sx={{ mt: 1 }}>{errors.voiceTone}</Typography>
+              )}
               <Box className="d-flex align-items-center mt-2">
                 <Star sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                 <Typography variant="body2" className="text-muted">
@@ -1002,15 +1075,15 @@ const handleHelpWithSelection = value => {
                       px: 3,
                       py: 1.5,
                       textTransform: 'none',
-                      ...(formData.postLength === length 
+                      ...(formData.postLength === length
                         ? {
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                            color: 'white'
-                          }
+                          background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                          color: 'white'
+                        }
                         : {
-                            borderColor: '#8b5cf6',
-                            color: '#8b5cf6'
-                          })
+                          borderColor: '#8b5cf6',
+                          color: '#8b5cf6'
+                        })
                     }}
                   >
                     {length.charAt(0).toUpperCase() + length.slice(1)}
@@ -1099,12 +1172,15 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   multiline
                   rows={4}
                   variant="outlined"
                   value={formData.originStory}
                   onChange={e => setFormData({ ...formData, originStory: e.target.value })}
                   placeholder="Tell your origin story..."
+                  error={!!errors.originStory}
+                  helperText={errors.originStory}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -1131,12 +1207,15 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   multiline
                   rows={4}
                   variant="outlined"
                   value={formData.challenges}
                   onChange={e => setFormData({ ...formData, challenges: e.target.value })}
                   placeholder="Share your challenges and how you overcame them..."
+                  error={!!errors.challenges}
+                  helperText={errors.challenges}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -1171,12 +1250,15 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   multiline
                   rows={4}
                   variant="outlined"
                   value={formData.wins}
                   onChange={e => setFormData({ ...formData, wins: e.target.value })}
                   placeholder="Share your wins, achievements, and proud moments..."
+                  error={!!errors.wins}
+                  helperText={errors.wins}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -1203,12 +1285,15 @@ const handleHelpWithSelection = value => {
                 </Box>
                 <TextField
                   fullWidth
+                  required
                   multiline
                   rows={5}
                   variant="outlined"
                   value={formData.testimonials}
                   onChange={e => setFormData({ ...formData, testimonials: e.target.value })}
                   placeholder="Paste your testimonials here, one per line or separated by paragraphs..."
+                  error={!!errors.testimonials}
+                  helperText={errors.testimonials}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: 2,
@@ -1383,12 +1468,15 @@ const handleHelpWithSelection = value => {
               </Box>
               <TextField
                 fullWidth
+                required
                 multiline
                 rows={3}
                 variant="outlined"
                 value={formData.additionalFeatures}
                 onChange={e => setFormData({ ...formData, additionalFeatures: e.target.value })}
                 placeholder="What features would you love to see?"
+                error={!!errors.additionalFeatures}
+                helperText={errors.additionalFeatures}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2,
@@ -1418,12 +1506,12 @@ const handleHelpWithSelection = value => {
                 Back
               </Button>
               <Button
-               disabled={isLoading}
+                disabled={isLoading}
                 variant="contained"
                 onClick={() => {
                   const output = generateOutput();
                   const resp = submitQuestion(output).unwrap();
-                  if(resp){
+                  if (resp) {
                     dispatch(updateUserDetail({ has_answered: true }));
                     navigate("/");
                   }
@@ -1444,7 +1532,7 @@ const handleHelpWithSelection = value => {
                   }
                 }}
               >
-               {isLoading ? 'submitting...': 'Finish Setup'}
+                {isLoading ? 'submitting...' : 'Finish Setup'}
               </Button>
             </Box>
           </Box>
@@ -1456,7 +1544,7 @@ const handleHelpWithSelection = value => {
   };
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%)'
     }}>

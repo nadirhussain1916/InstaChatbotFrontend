@@ -66,8 +66,8 @@ function ChatMessage({ message, profile, showTyping = false }) {
         gap={1}
       >
         <Avatar
-          sx={{ bgcolor: isUser ? 'transparent' : '#e0e0e0' }}
-          src={isUser ? `${API_URL}${profile}` : undefined}
+          // sx={{ bgcolor: isUser ? 'transparent' : '#e0e0e0' }}
+          src={isUser ? `${API_URL}${profile}` : ''}
         >
           {!isUser && 'AI'}
         </Avatar>
