@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography, useTheme, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/utilities/constants';
+import image from "@assets/logo.png";
 
 function removeSquareBrackets(text) {
   if (!text) return '';
@@ -65,12 +66,11 @@ function ChatMessage({ message, profile, showTyping = false }) {
         flexDirection={isUser ? 'row-reverse' : 'row'}
         gap={1}
       >
-        <Avatar
-          // sx={{ bgcolor: isUser ? 'transparent' : '#e0e0e0' }}
-          src={isUser ? `${API_URL}${profile}` : ''}
-        >
-          {!isUser && 'AI'}
-        </Avatar>
+        {isUser ? (
+          <Avatar src={profile ? `${API_URL}${profile}` : ''} />
+        ) : (
+          <img src={image} height={50} width={50} alt="user-image" />
+        )}
 
         <Box
           component={motion.div}

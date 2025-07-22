@@ -192,8 +192,8 @@ function ChatInterface() {
             px={2}
             py={1.5}
           >
-            <Typography fontSize={12} color="text.secondary">
-              AI is typing...
+            <Typography fontSize={16} color="text.secondary">
+              Sit back and relax...
             </Typography>
           </Box>
         )}
@@ -214,7 +214,6 @@ function ChatInterface() {
                 <Box flex={1}>
                   <TextField
                     fullWidth
-                    multiline
                     minRows={1}
                     maxRows={4}
                     name="description"

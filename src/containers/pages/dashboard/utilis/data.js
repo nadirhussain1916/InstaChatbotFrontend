@@ -5,21 +5,21 @@ export const chatFlowJson = {
       {
         type: "Carousel",
         followup: {
-          message: "Awesome! Let’s create a scroll-stopping Carousel. 🎠",
+          message: "Please share the content topic and any key details you'd like us to include for your chosen format  for Carousel",
           type: "text"
         }
       },
       {
         type: "Reel",
         followup: {
-          message: "Great! Let’s make a Reel that grabs attention right away. 🎬",
+          message: "Please share the content topic and any key details you'd like us to include for your chosen format  for Reel",
           type: "text"
         }
       },
       {
         type: "Email",
         followup: {
-          message: "Nice! Let’s craft an Email your audience will want to open. 📧",
+          message: "Please share the content topic and any key details you'd like us to include for your chosen format  for Email",
           type: "text"
         }
       }
