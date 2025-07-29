@@ -82,7 +82,7 @@ function Questions() {
     brandType: '',
     industry: '',
     helpDescription: '',
-    website: '',
+    website: null, // store File object
     offers: [],
     voiceTone: [],
     postLength: 'medium',
@@ -164,7 +164,7 @@ function Questions() {
         if (!formData.brandType.trim()) stepErrors.brandType = 'Brand type is required';
         if (!formData.industry.trim()) stepErrors.industry = 'Industry is required';
         if (!formData.helpDescription.trim()) stepErrors.helpDescription = 'Description is required';
-        if (!formData.website.trim()) stepErrors.website = 'Website is required';
+        if (!formData.website) stepErrors.website = 'Website is required';
         break;
       case 4:
         // Offers are optional, but if present, validate fields
@@ -288,27 +288,32 @@ function Questions() {
   };
 
   const generateOutput = () => {
+    // Build answers array from formData
     const answers = [
-      { question: "What's your first name?", answer: formData.firstName },
+      { question: "What is your role?", answer: formData.firstName },
       { question: "What do you want help with most?", answer: formData.helpWith.join(', ') },
       { question: "What is your brand or business name?", answer: formData.brandName },
       { question: "Are you a personal brand or a product-based business?", answer: formData.brandType },
       { question: "What industry or niche are you in?", answer: formData.industry },
       { question: "In one sentence, what do you help people do?", answer: formData.helpDescription },
-      { question: "Have a website? Brand doc? Sales page?", answer: formData.website },
-      { question: "Your offers", answer: formData.offers.map(offer => `${offer.name} (${offer.priceModel}) - ${offer.transformation}`).join('; ') },
-      { question: "Voice tone", answer: formData.voiceTone.join(', ') },
+      { question: "Offers", answer: JSON.stringify(formData.offers) },
+      { question: "Voice Tone", answer: formData.voiceTone.join(', ') },
       { question: "Default post length", answer: formData.postLength },
-      { question: "How did this all start? What pushed you to build your business?", answer: formData.originStory },
-      { question: "What challenges have you overcome along the way?", answer: formData.challenges },
-      { question: "What's gone right? This is your moment!", answer: formData.wins },
-      { question: "Your testimonials", answer: formData.testimonials },
-      { question: "What would you like to connect?", answer: formData.connections.join(', ') },
-      { question: "Do you consent to connect these?", answer: formData.consent ? 'Yes' : 'No' },
-      { question: "Are there any other features you WISH we would add?", answer: formData.additionalFeatures }
-    ].filter(item => item.answer && item.answer !== '' && item.answer !== 'No');
+      { question: "Origin Story", answer: formData.originStory },
+      { question: "Challenges", answer: formData.challenges },
+      { question: "Wins", answer: formData.wins },
+      { question: "Testimonials", answer: formData.testimonials },
+      { question: "Connections", answer: formData.connections.join(', ') },
+      { question: "Consent", answer: formData.consent ? 'Yes' : 'No' },
+      { question: "Additional Features", answer: formData.additionalFeatures }
+    ];
 
-    return { answers };
+    const form = new FormData();
+    form.append('answers', JSON.stringify(answers));
+    if (formData.website) {
+      form.append('file', formData.website);
+    }
+    return form;
   };
 
   const renderStep = () => {
@@ -706,27 +711,25 @@ function Questions() {
                 <Box className="d-flex align-items-center mb-2">
                   <Link sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                   <Typography variant="body2" className="text-muted">
-                    Drop it in so I can pull from your own words. Upload away (don't hold back here).
+                    Upload your file (PDF, DOC, etc.) so I can pull from your own words. Upload away (don't hold back here).
                   </Typography>
                 </Box>
-                <TextField
-                  fullWidth
-                  required
-                  variant="outlined"
-                  value={formData.website}
-                  onChange={e => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="https://yourwebsite.com"
-                  error={!!errors.website}
-                  helperText={errors.website}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                      backgroundColor: '#f8f9fa',
-                      '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.txt,.rtf"
+                  onChange={e => {
+                    setFormData({ ...formData, website: e.target.files[0] });
                   }}
+                  style={{ marginBottom: 8 }}
                 />
+                {formData.website && (
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    Selected: {formData.website.name}
+                  </Typography>
+                )}
+                {errors.website && (
+                  <Typography color="error" variant="caption">{errors.website}</Typography>
+                )}
               </Box>
             </Box>
 
