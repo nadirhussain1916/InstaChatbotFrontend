@@ -26,7 +26,7 @@ function InstagramPost({ post }) {
                     <>
                         <CardMedia
                             component="video"
-                            src={`${API_URL}${post?.thumbnail_url}`} // Ensure this is a valid image thumbnail, not the actual video
+                            src={`${post?.media_url}`} // Ensure this is a valid image thumbnail, not the actual video
                             alt=""
                             sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
@@ -66,7 +66,7 @@ function InstagramPost({ post }) {
                 ) : (
                     <CardMedia
                         component="img"
-                        image={`${API_URL}${post?.thumbnail_url}`}
+                        image={`${post?.media_url}`}
                         alt=''
                         sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />

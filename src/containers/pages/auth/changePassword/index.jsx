@@ -20,47 +20,40 @@ import {
 } from '@mui/icons-material';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { useLoginMutation } from '@/services/public/auth';
+import { useChangePasswordMutation } from '@/services/public/auth';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { onLoggedIn } from '@/store/slices/authSlice';
 import image from '@assets/image.jpg'
-import { useUserInstagramPostDataMutation } from '@/services/private/post';
 
 const initialValues = {
-  username: '',
-  password: '',
+  current_password: '',
+  new_password: '',
 };
 
 const validationSchema = Yup.object({
-  username: Yup.string().required('Username is required'),
-  password: Yup.string().required('Password is required'),
+  current_password: Yup.string().required('Old Password is required'),
+  new_password: Yup.string().required('New Password is required'),
 });
 
-function LoginPage() {
+function ChangePassword() {
   const [showPassword, setShowPassword] = useState(false);
-  const [login] = useLoginMutation();
+  const [changePassword] = useChangePasswordMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [getData] = useUserInstagramPostDataMutation();
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     setLoading(true);
 
-    const loginResp = await login({ ...values });
+    const changePasswordResp = await changePassword({ ...values });
 
-    if (loginResp?.data) {
-      dispatch(onLoggedIn(loginResp?.data));
-      getData({ ...values });
+    if (changePasswordResp?.data) {
       if (data) {
-        navigate('/');
+        navigate('/auth/login');
       }
       onClose();
     } else {
-      setError('Invalid username or password');
+      setError('Try Again');
     }
 
     setLoading(false);
@@ -115,7 +108,7 @@ function LoginPage() {
           </Avatar>
 
           <Typography variant="h5" fontWeight={600} mb={3}>
-            Get Started
+            Change Password
           </Typography>
 
           <Formik
@@ -132,19 +125,27 @@ function LoginPage() {
               isSubmitting,
             }) => (
               <Form style={{ width: '100%', maxWidth: 400 }}>
-                <TextField
+<TextField
                   fullWidth
-                  placeholder="instagram Username"
-                  name="username"
-                  value={values.username}
+                  placeholder="Add Old Password"
+                  name="current_password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.username && Boolean(errors.username)}
-                  helperText={touched.username && errors.username}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PersonOutlineRounded />
+                        <LockIcon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(prev => !prev)} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
                       </InputAdornment>
                     ),
                   }}
@@ -162,11 +163,10 @@ function LoginPage() {
                     },
                   }}
                 />
-
                 <TextField
                   fullWidth
-                  placeholder="insta Password"
-                  name="password"
+                  placeholder="Add New Password"
+                  name="new_password"
                   type={showPassword ? 'text' : 'password'}
                   value={values.password}
                   onChange={handleChange}
@@ -225,32 +225,12 @@ function LoginPage() {
                   {isSubmitting || loading ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CircularProgress size={20} color="inherit" />
-                      Logging in...
+                      Submitting...
                     </Box>
                   ) : (
-                    'Login'
+                    'Submit'
                   )}
                 </Button>
-                <Button
-                  fullWidth
-                  size="large"
-                  variant="contained"
-                  type="submit"
-                  onClick={() => navigate('/auth/signup')}
-                  sx={{
-                    mb: 2,
-                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    '&:hover': {
-                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    },
-                  }}
-
-                >
-                  Sign Up
-                </Button>
-                 <Box className='d-flex justify-content-end'>
-                  <Typography onClick={()=>navigate('/auth/change-password')} sx={{fontSize:'14px',color:'blue', cursor:'pointer'}}>Change password</Typography>
-                </Box>
               </Form>
             )}
           </Formik>
@@ -260,4 +240,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default ChangePassword;

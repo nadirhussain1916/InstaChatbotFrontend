@@ -20,12 +20,13 @@ import {
 } from '@mui/icons-material';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { useLoginMutation } from '@/services/public/auth';
+import { useSignupMutation } from '@/services/public/auth';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { onLoggedIn } from '@/store/slices/authSlice';
 import image from '@assets/image.jpg'
 import { useUserInstagramPostDataMutation } from '@/services/private/post';
+import useHandleApiResponse from '@/hooks/useHandleApiResponse';
 
 const initialValues = {
   username: '',
@@ -37,9 +38,10 @@ const validationSchema = Yup.object({
   password: Yup.string().required('Password is required'),
 });
 
-function LoginPage() {
+function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [login] = useLoginMutation();
+  const [login, {error:isError ,isSuccess}] = useSignupMutation();
+  useHandleApiResponse(isError, isSuccess, 'Sign Up Scussfully');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [error, setError] = useState('');
@@ -115,7 +117,7 @@ function LoginPage() {
           </Avatar>
 
           <Typography variant="h5" fontWeight={600} mb={3}>
-            Get Started
+            Sign Up
           </Typography>
 
           <Formik
@@ -207,6 +209,7 @@ function LoginPage() {
                     {error}
                   </Typography>
                 )}
+
                 <Button
                   fullWidth
                   size="large"
@@ -214,43 +217,36 @@ function LoginPage() {
                   type="submit"
                   disabled={loading || isSubmitting}
                   sx={{
-                    mb: 2,
+                    mb: 1,
                     background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
                     '&:hover': {
                       background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
                     },
                   }}
-
                 >
                   {isSubmitting || loading ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CircularProgress size={20} color="inherit" />
-                      Logging in...
+                      Signing up...
                     </Box>
                   ) : (
-                    'Login'
+                    'Sign up'
                   )}
                 </Button>
                 <Button
                   fullWidth
                   size="large"
-                  variant="contained"
-                  type="submit"
-                  onClick={() => navigate('/auth/signup')}
-                  sx={{
-                    mb: 2,
-                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
-                    '&:hover': {
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ mb: 2,
+                  '&:hover': {
                       background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
                     },
                   }}
-
+                  onClick={() => navigate('/auth/login')}
                 >
-                  Sign Up
+                  Back to Login
                 </Button>
-                 <Box className='d-flex justify-content-end'>
-                  <Typography onClick={()=>navigate('/auth/change-password')} sx={{fontSize:'14px',color:'blue', cursor:'pointer'}}>Change password</Typography>
-                </Box>
               </Form>
             )}
           </Formik>
@@ -260,4 +256,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default SignUpPage;
