@@ -7,6 +7,8 @@ import PublicRoutes from './PublicRoutes';
 import GloabalLoader from '@containers/common/loaders/GloabalLoader';
 import Dashboard from '@/containers/pages/dashboard';
 import Question from '@/containers/pages/questions';
+import SignUp from '@/containers/pages/auth/signup';
+import ChangePassword from '@/containers/pages/auth/changePassword';
 // LAZY LOAD
 const Login = lazy(() => import('@containers/pages/auth/login'));
 
@@ -20,6 +22,9 @@ function AppRoutes() {
               {/* Public routes */}
               <Route path="auth" element={<PublicRoutes />}>
                 <Route path="login" element={<Login />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="change-password" element={<ChangePassword />} />
+
               </Route>
 
               {/* Private routes */}
