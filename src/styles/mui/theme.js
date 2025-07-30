@@ -1,6 +1,13 @@
 import { createTheme } from '@mui/material';
 
-import { primary, secondary, yellow, green, purple, red  } from '@styles/common/colors';
+// Clean minimalistic color palette for content creators
+const mainDark = '#090040';      // Deep navy
+const mainPurple = '#471396';    // Deep purple
+const accentPurple = '#B13BFF';  // Bright purple
+const accentYellow = '#FFCC00';  // Golden yellow
+
+// Clean background colors
+const lightBg = '#ffffff';
 
 const theme = createTheme({
   breakpoints: {
@@ -15,139 +22,205 @@ const theme = createTheme({
   },
 
   palette: {
+    mode: 'light',
     primary: {
-      main: primary,
-      light: 'rgba(0, 143, 213, 0.1)',
-      dark: 'rgba(0, 143, 213, 0.2)',
+      main: mainPurple,
+      light: accentPurple,
+      dark: mainDark,
       contrastText: '#ffffff',
     },
     secondary: {
-      main: secondary,
-      light: '#EDECEC',
+      main: accentPurple,
+      light: '#e0b3ff',
+      dark: mainPurple,
+      contrastText: '#ffffff',
     },
-    yellow: {
-      main: yellow,
-      light: 'rgba(255, 159, 41, 0.16)',
-      brightLight: '#FEF9C3',
-      dark: '#F59E0B',
+    accent: {
+      main: accentYellow,
+      light: '#fff3b3',
+      dark: '#e6b800',
+      contrastText: '#090040',
     },
-    green: {
-      main: green,
-      light: 'rgba(22, 163, 74, 0.1)',
-      dark: 'rgba(22, 163, 74, 0.2)',
+    background: {
+      default: mainDark,
+      paper: lightBg,
     },
-    purple: {
-      main: purple,
-      light: 'rgba(153, 53, 254, 0.16)',
+    text: {
+      primary: '#090040',
+      secondary: 'rgba(9, 0, 64, 0.7)',
+      disabled: 'rgba(9, 0, 64, 0.4)',
     },
-    red: {
-      main: red,
-      light: 'rgba(220, 38, 38, 0.1)',
-      dark: 'rgba(220, 38, 38, 0.15)',
+    divider: 'rgba(177, 59, 255, 0.1)',
+    instagram: {
+      main: accentPurple,
+      light: mainPurple,
+      dark: mainDark,
+      contrastText: '#ffffff',
+    },
+    success: {
+      main: '#16A34A',
+      light: '#4ADE80',
+      dark: '#15803D',
+    },
+    warning: {
+      main: accentYellow,
+      light: '#FEF08A',
+      dark: '#CA8A04',
+    },
+    error: {
+      main: '#DC2626',
+      light: '#F87171',
+      dark: '#B91C1C',
     },
   },
 
   typography: {
-    fontFamily: 'Montserrat, sans-serif',
-
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    
     h1: {
-      fontSize: '48px',
-      fontWeight: '500',
+      fontSize: '2.75rem',
+      fontWeight: 700,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.2,
 
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '35px',
+        fontSize: '2.25rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '30px',
+        fontSize: '2rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '25px',
+        fontSize: '1.75rem',
       },
     },
 
     h2: {
-      fontSize: '45px',
-      fontWeight: '500',
-      textTransform: 'capitalize',
+      fontSize: '2.25rem',
+      fontWeight: 600,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.3,
 
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '32px',
+        fontSize: '2rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '28px',
+        fontSize: '1.75rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '22px',
+        fontSize: '1.5rem',
       },
     },
 
     h3: {
-      fontSize: '30px',
-      fontWeight: '500',
+      fontSize: '1.875rem',
+      fontWeight: 600,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.4,
 
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '24px',
+        fontSize: '1.5rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '22px',
+        fontSize: '1.375rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '18px',
+        fontSize: '1.125rem',
+      },
+    },
+
+    h4: {
+      fontSize: '1.5rem',
+      fontWeight: 600,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.4,
+
+      '@media (min-width: 768px) and (max-width: 991px)': {
+        fontSize: '1.25rem',
+      },
+
+      '@media (max-width: 768px) and (min-width: 570px)': {
+        fontSize: '1.125rem',
+      },
+
+      '@media (max-width: 570px)': {
+        fontSize: '1rem',
       },
     },
 
     h5: {
-      fontSize: '24px',
-      fontWeight: '500',
+      fontSize: '1.25rem',
+      fontWeight: 500,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.5,
+
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '20px',
+        fontSize: '1.125rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '18px',
+        fontSize: '1rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '16px',
+        fontSize: '0.875rem',
       },
     },
 
     h6: {
-      fontSize: '18px',
-      fontWeight: '400',
+      fontSize: '1.125rem',
+      fontWeight: 500,
+      letterSpacing: '-0.025em',
+      lineHeight: 1.5,
+
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '17px',
+        fontSize: '1rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '16px',
+        fontSize: '0.875rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '15px',
+        fontSize: '0.8125rem',
       },
     },
 
     body1: {
-      fontSize: '16px',
+      fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: 1.6,
 
       '@media (min-width: 768px) and (max-width: 991px)': {
-        fontSize: '16px',
+        fontSize: '0.875rem',
       },
 
       '@media (max-width: 768px) and (min-width: 570px)': {
-        fontSize: '14px',
+        fontSize: '0.875rem',
       },
 
       '@media (max-width: 570px)': {
-        fontSize: '14px',
+        fontSize: '0.8125rem',
       },
+    },
+
+    body2: {
+      fontSize: '0.875rem',
+      fontWeight: 400,
+      lineHeight: 1.6,
+      color: 'rgba(255, 255, 255, 0.8)',
+    },
+
+    button: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      letterSpacing: '0.025em',
+      textTransform: 'none',
     },
 
     label: {
@@ -218,7 +291,47 @@ const theme = createTheme({
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: '#EBECEF',
+          borderColor: 'rgba(177, 59, 255, 0.2)',
+        },
+      },
+    },
+
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          background: '#ffffff',
+          border: '1px solid rgba(177, 59, 255, 0.1)',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(9, 0, 64, 0.08)',
+        },
+      },
+    },
+
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            background: '#ffffff',
+            borderRadius: '8px',
+            '& fieldset': {
+              borderColor: 'rgba(177, 59, 255, 0.2)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(177, 59, 255, 0.4)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: accentPurple,
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(9, 0, 64, 0.7)',
+            '&.Mui-focused': {
+              color: accentPurple,
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: '#090040',
+          },
         },
       },
     },
@@ -236,10 +349,18 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'capitalize',
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: '12px',
+          padding: '12px 24px',
           boxShadow: 'none',
+          transition: 'all 0.3s ease',
           '&:hover': {
             boxShadow: 'none',
+            transform: 'translateY(-2px)',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
           },
         },
       },
@@ -247,36 +368,51 @@ const theme = createTheme({
         {
           props: { variant: 'contained', color: 'primary' },
           style: {
+            background: mainPurple,
             border: 'none',
+            boxShadow: '0 2px 8px rgba(71, 19, 150, 0.2)',
             '&:hover': {
-              background: primary,
+              background: accentPurple,
+              boxShadow: '0 4px 12px rgba(177, 59, 255, 0.3)',
             },
           },
         },
         {
           props: { variant: 'contained', color: 'secondary' },
           style: {
+            background: accentYellow,
+            color: mainDark,
             border: 'none',
+            boxShadow: '0 2px 8px rgba(255, 204, 0, 0.2)',
             '&:hover': {
-              background: secondary,
+              background: '#e6b800',
+              boxShadow: '0 4px 12px rgba(255, 204, 0, 0.3)',
             },
           },
         },
         {
           props: { variant: 'outlined', color: 'primary' },
           style: {
+            border: `1px solid ${accentPurple}`,
+            color: accentPurple,
+            background: 'transparent',
             '&:hover': {
-              background: primary,
+              background: accentPurple,
               color: '#ffffff',
+              border: `1px solid ${accentPurple}`,
             },
           },
         },
         {
           props: { variant: 'outlined', color: 'secondary' },
           style: {
+            border: `1px solid ${accentYellow}`,
+            color: accentYellow,
+            background: 'transparent',
             '&:hover': {
-              color: '#ffffff',
-              background: secondary,
+              color: mainDark,
+              background: accentYellow,
+              border: `1px solid ${accentYellow}`,
             },
           },
         },

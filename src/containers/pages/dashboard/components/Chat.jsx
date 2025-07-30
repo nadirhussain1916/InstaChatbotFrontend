@@ -120,15 +120,88 @@ function Chat() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Box display="flex" justifyContent="flex-end" alignItems="center" p={isMobile ? 1 : 2} borderBottom="1px solid #e0e0e0">
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100vh',
+        background: '#ffffff',
+        border: '1px solid rgba(177, 59, 255, 0.1)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 16px rgba(9, 0, 64, 0.1)',
+        animation: 'fadeInUp 0.4s ease',
+      }}
+    >
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        alignItems="center" 
+        p={isMobile ? 2 : 3} 
+        sx={{
+          background: '#ffffff',
+          borderBottom: '1px solid rgba(177, 59, 255, 0.1)',
+        }}
+      >
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 600,
+            color: '#090040',
+            fontSize: '1.25rem',
+          }}
+        >
+          Content Creator AI
+        </Typography>
+        
         <Box display="flex" alignItems="center" gap={2}>
-          <Avatar src={`${API_URL}${data?.profile_pic}`} sx={{ width: 40, height: 40, cursor: 'pointer' }} onClick={handleAvatarClick} />
-          <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
-            <MenuItem onClick={handleAppLogout}>Logout</MenuItem>
+          <Avatar 
+            src={`${API_URL}${data?.profile_pic}`} 
+            sx={{ 
+              width: 40, 
+              height: 40, 
+              cursor: 'pointer',
+              border: '2px solid #B13BFF',
+            }} 
+            onClick={handleAvatarClick} 
+          />
+          <Menu 
+            anchorEl={anchorEl} 
+            open={openMenu} 
+            onClose={handleMenuClose}
+            PaperProps={{
+              sx: {
+                background: '#ffffff',
+                border: '1px solid rgba(177, 59, 255, 0.1)',
+                borderRadius: '8px',
+                boxShadow: '0 4px 16px rgba(9, 0, 64, 0.1)',
+              }
+            }}
+          >
+            <MenuItem 
+              onClick={handleAppLogout}
+              sx={{ 
+                color: '#090040',
+                '&:hover': {
+                  background: 'rgba(177, 59, 255, 0.08)',
+                }
+              }}
+            >
+              Logout
+            </MenuItem>
           </Menu>
           {!isMobile && (
-            <Chip label={truncateUserName(data?.full_name || data?.username)} sx={{ color: 'primary.main', fontWeight: 600, fontSize: '0.875rem', bgcolor: 'primary.light', borderRadius: 1.5 }} />
+            <Chip 
+              label={truncateUserName(data?.full_name || data?.username)} 
+              sx={{ 
+                background: 'rgba(177, 59, 255, 0.1)',
+                color: '#471396', 
+                fontWeight: 500, 
+                fontSize: '0.875rem', 
+                borderRadius: '8px',
+                border: '1px solid rgba(177, 59, 255, 0.2)',
+              }} 
+            />
           )}
         </Box>
       </Box>
@@ -136,36 +209,129 @@ function Chat() {
         <SectionLoader />
       ) : (
         <React.Fragment>
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3 }}>
-            <Box sx={{ background: 'white', color: 'text.primary', px: 2, py: 1.25, borderRadius: 3, maxWidth: '100%', whiteSpace: 'pre-line', mb: 5 }}>
-              <Typography sx={{ color: 'black', fontWeight: 400 }}>
+          <Box 
+            sx={{ 
+              flexGrow: 1, 
+              overflowY: 'auto', 
+              p: 3,
+              background: '#ffffff',
+              '&::-webkit-scrollbar': {
+                width: '4px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: 'rgba(177, 59, 255, 0.05)',
+                borderRadius: '2px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: 'rgba(177, 59, 255, 0.3)',
+                borderRadius: '2px',
+                '&:hover': {
+                  background: 'rgba(177, 59, 255, 0.5)',
+                },
+              },
+            }}
+          >
+            <Box 
+              sx={{ 
+                background: '#ffffff', 
+                color: '#090040', 
+                px: 3, 
+                py: 2, 
+                borderRadius: '12px',
+                border: '1px solid rgba(177, 59, 255, 0.1)',
+                maxWidth: '100%', 
+                whiteSpace: 'pre-line', 
+                mb: 4,
+                boxShadow: '0 2px 8px rgba(9, 0, 64, 0.08)',
+              }}
+            >
+              <Typography sx={{ color: '#090040', fontWeight: 400, lineHeight: 1.6 }}>
                 {aiResp?.ai_response}
               </Typography>
             </Box>
 
             {messages.map(msg => (
-              <Box key={msg.id} sx={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', mb: 1 }}>
-                {msg.sender === 'bot' &&  <img src={image} height={50} width={50} />}
+              <Box key={msg.id} sx={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', mb: 2 }}>
+                {msg.sender === 'bot' && (
+                  <Box sx={{ mr: 2, alignSelf: 'flex-end' }}>
+                    <img src={image} height={40} width={40} style={{ borderRadius: '50%', border: '2px solid #B13BFF' }} alt="AI Assistant" />
+                  </Box>
+                )}
 
-                <Box sx={{ background: msg.sender === 'user' ? 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)' : 'grey.200', color: msg.sender === 'user' ? 'white' : 'text.primary', px: 2, py: 1.25, borderRadius: 2, maxWidth: '75%', whiteSpace: 'pre-line' }}>
-                  <Typography sx={{ fontWeight: 400 }}>{msg.text}</Typography>
+                <Box 
+                  sx={{ 
+                    background: msg.sender === 'user' 
+                      ? '#471396' 
+                      : '#ffffff', 
+                    color: msg.sender === 'user' ? 'white' : '#090040', 
+                    px: 3, 
+                    py: 2, 
+                    borderRadius: msg.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                    maxWidth: '75%', 
+                    whiteSpace: 'pre-line',
+                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(177, 59, 255, 0.15)',
+                    boxShadow: msg.sender === 'user'
+                      ? '0 2px 8px rgba(71, 19, 150, 0.2)'
+                      : '0 2px 8px rgba(9, 0, 64, 0.08)',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-1px)',
+                      boxShadow: msg.sender === 'user'
+                        ? '0 4px 12px rgba(71, 19, 150, 0.3)'
+                        : '0 4px 12px rgba(9, 0, 64, 0.12)',
+                    },
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 400, lineHeight: 1.6 }}>{msg.text}</Typography>
                   {msg.options && (
-                    <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                       {msg.options.map((opt, i) => {
                         const iconMap = {
-                          Carousel: <ViewCarouselIcon sx={{ fontSize: 36 }} />,
-                          Reel: <MovieIcon sx={{ fontSize: 36 }} />,
-                          Email: <EmailIcon sx={{ fontSize: 36 }} />,
+                          Carousel: <ViewCarouselIcon sx={{ fontSize: 32, color: '#471396' }} />,
+                          Reel: <MovieIcon sx={{ fontSize: 32, color: '#471396' }} />,
+                          Email: <EmailIcon sx={{ fontSize: 32, color: '#471396' }} />,
                         };
                         const colorMap = {
-                          Carousel: 'linear-gradient(135deg, #ec4899, #fb923c)',
-                          Reel: 'linear-gradient(135deg, #6366f1, #a855f7)',
-                          Email: 'linear-gradient(135deg, #14b8a6, #22d3ee)',
+                          Carousel: '#B13BFF',
+                          Reel: '#FFCC00',
+                          Email: '#471396',
                         };
                         return (
-                          <Box key={i} onClick={() => handleOptionClick(opt)} sx={{ cursor: 'pointer', width: 120, height: 120, p: 2, borderRadius: 4, textAlign: 'center', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: colorMap[opt] || 'linear-gradient(135deg, #ddd, #ccc)', transition: 'transform 0.2s ease, box-shadow 0.2s ease', boxShadow: '0 8px 20px rgba(0,0,0,0.15)', '&:hover': { transform: 'scale(1.05)', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' } }}>
+                          <Box 
+                            key={i} 
+                            onClick={() => handleOptionClick(opt)} 
+                            sx={{ 
+                              cursor: 'pointer', 
+                              width: 140, 
+                              height: 120, 
+                              p: 2.5, 
+                              borderRadius: '16px', 
+                              textAlign: 'center', 
+                              color: '#090040', 
+                              display: 'flex', 
+                              flexDirection: 'column', 
+                              alignItems: 'center', 
+                              justifyContent: 'center', 
+                              background: '#ffffff', 
+                              transition: 'all 0.2s ease', 
+                              boxShadow: '0 2px 8px rgba(9, 0, 64, 0.08)',
+                              border: `2px solid ${colorMap[opt] || '#B13BFF'}`,
+                              '&:hover': { 
+                                transform: 'translateY(-2px)', 
+                                boxShadow: '0 4px 12px rgba(9, 0, 64, 0.15)',
+                                background: `rgba(${colorMap[opt] === '#B13BFF' ? '177, 59, 255' : colorMap[opt] === '#FFCC00' ? '255, 204, 0' : '71, 19, 150'}, 0.05)`,
+                              } 
+                            }}
+                          >
                             {iconMap[opt] || '📄'}
-                            <Typography fontWeight={600} mt={1} fontSize={16}>{opt}</Typography>
+                            <Typography 
+                              fontWeight={600} 
+                              mt={1.5} 
+                              fontSize={14}
+                              sx={{ color: '#090040' }}
+                            >
+                              {opt}
+                            </Typography>
                           </Box>
                         );
                       })}
@@ -173,15 +339,53 @@ function Chat() {
                   )}
                 </Box>
 
-                {msg.sender === 'user' && <Avatar src={`${API_URL}${data?.profile_pic}`} sx={{ width: 40, height: 40, bgcolor: 'grey.400', ml: 1 }} />}
+                {msg.sender === 'user' && (
+                  <Box sx={{ ml: 2, alignSelf: 'flex-end' }}>
+                    <Avatar 
+                      src={`${API_URL}${data?.profile_pic}`} 
+                      sx={{ 
+                        width: 40, 
+                        height: 40,
+                        border: '2px solid rgba(177, 59, 255, 0.3)',
+                      }} 
+                    />
+                  </Box>
+                )}
               </Box>
             ))}
 
             {isTyping && (
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <img src={image} height={50} width={50} />
-                <Box sx={{ bgcolor: 'grey.200', px: 2, py: 1.25, borderRadius: 2, maxWidth: '75%', color: 'grey.600' }}>
-                  <Typography variant="body2" sx={{ fontStyle: 'italic' }}>Sit back and relax...</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ mr: 2 }}>
+                  <img src={image} height={40} width={40} style={{ borderRadius: '50%', border: '2px solid #B13BFF' }} alt="AI Assistant" />
+                </Box>
+                <Box 
+                  sx={{ 
+                    background: '#ffffff',
+                    border: '1px solid rgba(177, 59, 255, 0.2)',
+                    px: 3, 
+                    py: 2, 
+                    borderRadius: '18px', 
+                    maxWidth: '75%', 
+                    boxShadow: '0 2px 8px rgba(9, 0, 64, 0.08)',
+                  }}
+                >
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Box className="loading-dots">
+                      <Box className="loading-dot" />
+                      <Box className="loading-dot" />
+                      <Box className="loading-dot" />
+                    </Box>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontStyle: 'italic',
+                        color: '#471396',
+                      }}
+                    >
+                      AI is thinking...
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             )}
@@ -189,10 +393,16 @@ function Chat() {
             <div ref={messagesEndRef} />
           </Box>
 
-          <Box p={3} borderTop="1px solid #e0e0e0">
+          <Box 
+            p={3} 
+            sx={{
+              background: '#ffffff',
+              borderTop: '1px solid rgba(177, 59, 255, 0.1)',
+            }}
+          >
             <Formik
               initialValues={{ description: '' }}
-              onSubmit={async values => {
+              onSubmit={async (values, { resetForm }) => {
                 const payload = {
                   new_chat: { ...answers },
                   prompt: values.description,
@@ -201,6 +411,9 @@ function Chat() {
                 const response = await createChat(payload);
                 if (response?.data) {
                   navigate(`/new-chat/${response.data.thread_id}`);
+                } else {
+                  // Reset form even if navigation doesn't happen
+                  resetForm();
                 }
               }}
             >
@@ -213,20 +426,85 @@ function Chat() {
                         minRows={1}
                         maxRows={4}
                         name="description"
-                        placeholder="Write description to create..."
+                        placeholder="Type your message to get started..."
                         value={values.description}
                         onChange={handleChange}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            if (values.description.trim() && !isLoading) {
+                              // Submit the form
+                              e.target.form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                            }
+                          }
+                        }}
                         error={touched.description && Boolean(errors.description)}
                         helperText={touched.description && errors.description}
                         sx={{
-                          '& .MuiOutlinedInput-notchedOutline': { borderColor: '#a855f7' },
-                          '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#ec4899' },
-                          '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fb923c' },
+                          '& .MuiOutlinedInput-root': {
+                            background: '#ffffff',
+                            borderRadius: '16px',
+                            border: '1px solid rgba(177, 59, 255, 0.2)',
+                            '& fieldset': {
+                              borderColor: 'rgba(177, 59, 255, 0.2)',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: 'rgba(177, 59, 255, 0.4)',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#B13BFF',
+                              borderWidth: '2px',
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: '#471396',
+                          },
+                          '& .MuiOutlinedInput-input': {
+                            color: '#090040',
+                            '&::placeholder': {
+                              color: 'rgba(9, 0, 64, 0.5)',
+                              opacity: 1,
+                            },
+                          },
                         }}
                       />
                     </Box>
-                    <Button type="submit" sx={{ background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)', color: 'white', width: 48, height: 48, minWidth: 48, borderRadius: 2, '&:hover': { background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)' } }}>
-                      {isLoading ? <CircularProgress size={24} /> : <NearMeRounded />}
+                    <Button 
+                      type="submit" 
+                      variant="contained"
+                      disabled={isLoading || !values.description.trim()}
+                      sx={{ 
+                        background: '#471396',
+                        color: 'white', 
+                        width: 56, 
+                        height: 56, 
+                        minWidth: 56, 
+                        borderRadius: '16px',
+                        boxShadow: '0 2px 8px rgba(71, 19, 150, 0.2)',
+                        transition: 'all 0.2s ease',
+                        '&:hover': { 
+                          background: '#B13BFF',
+                          transform: 'translateY(-1px)',
+                          boxShadow: '0 4px 12px rgba(71, 19, 150, 0.3)',
+                        },
+                        '&:active': {
+                          transform: 'translateY(0)',
+                        },
+                        '&:disabled': {
+                          opacity: 0.6,
+                          transform: 'none',
+                          background: 'rgba(71, 19, 150, 0.3)',
+                        },
+                      }}
+                    >
+                      {isLoading ? (
+                        <CircularProgress 
+                          size={24} 
+                          sx={{ color: 'white' }} 
+                        />
+                      ) : (
+                        <NearMeRounded />
+                      )}
                     </Button>
                   </Box>
                 </Form>

@@ -137,33 +137,87 @@ function ChatInterface() {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height="100vh" bgcolor="white">
+    <Box 
+      display="flex" 
+      flexDirection="column" 
+      height="100vh"
+      sx={{
+        background: '#ffffff',
+        border: '1px solid rgba(177, 59, 255, 0.1)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 16px rgba(9, 0, 64, 0.1)',
+        animation: 'fadeInUp 0.4s ease',
+      }}
+    >
       {/* Header */}
       <Box
         display="flex"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         alignItems="center"
-        p={isMobile ? 1 : 2}
-        borderBottom="1px solid #e0e0e0"
+        p={isMobile ? 2 : 3}
+        sx={{
+          background: '#ffffff',
+          borderBottom: '1px solid rgba(177, 59, 255, 0.1)',
+        }}
       >
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 600,
+            color: '#090040',
+            fontSize: '1.25rem',
+          }}
+        >
+          AI Content Assistant
+        </Typography>
+        
         <Box display="flex" alignItems="center" gap={2}>
           <Avatar
             src={`${API_URL}${data?.profile_pic}`}
-            sx={{ width: 40, height: 40, cursor: 'pointer' }}
+            sx={{ 
+              width: 40, 
+              height: 40, 
+              cursor: 'pointer',
+              border: '2px solid #B13BFF',
+            }}
             onClick={handleAvatarClick}
           />
-          <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
-            <MenuItem onClick={handleAppLogout}>Logout</MenuItem>
+          <Menu 
+            anchorEl={anchorEl} 
+            open={openMenu} 
+            onClose={handleMenuClose}
+            PaperProps={{
+              sx: {
+                background: '#ffffff',
+                border: '1px solid rgba(177, 59, 255, 0.1)',
+                borderRadius: '8px',
+                boxShadow: '0 4px 16px rgba(9, 0, 64, 0.1)',
+              }
+            }}
+          >
+            <MenuItem 
+              onClick={handleAppLogout}
+              sx={{ 
+                color: '#090040',
+                '&:hover': {
+                  background: 'rgba(177, 59, 255, 0.08)',
+                }
+              }}
+            >
+              Logout
+            </MenuItem>
           </Menu>
           {!isMobile && (
             <Chip
               label={truncateUserName(data?.full_name || data?.username)}
               sx={{
-                color: 'primary.main',
-                fontWeight: 600,
+                background: 'rgba(177, 59, 255, 0.1)',
+                color: '#471396',
+                fontWeight: 500,
                 fontSize: '0.875rem',
-                bgcolor: 'primary.light',
-                borderRadius: 1.5,
+                borderRadius: '8px',
+                border: '1px solid rgba(177, 59, 255, 0.2)',
               }}
             />
           )}
@@ -171,7 +225,28 @@ function ChatInterface() {
       </Box>
 
       {/* Messages */}
-      <Box flex={1} overflow="auto" p={3}>
+      <Box 
+        flex={1} 
+        overflow="auto" 
+        p={3}
+        sx={{
+          background: '#ffffff',
+          '&::-webkit-scrollbar': {
+            width: '4px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'rgba(177, 59, 255, 0.05)',
+            borderRadius: '2px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(177, 59, 255, 0.3)',
+            borderRadius: '2px',
+            '&:hover': {
+              background: 'rgba(177, 59, 255, 0.5)',
+            },
+          },
+        }}
+      >
         {chatMessages?.map((message, index) => (
           <ChatMessage
             key={message.id ?? index}
@@ -186,15 +261,31 @@ function ChatInterface() {
             display="flex"
             justifyContent="flex-start"
             mb={2}
-            border="1px solid #e0e0e0"
-            borderRadius={4}
-            boxShadow={1}
-            px={2}
-            py={1.5}
+            sx={{
+              background: '#ffffff',
+              border: '1px solid rgba(177, 59, 255, 0.1)',
+              borderRadius: '18px',
+              boxShadow: '0 2px 8px rgba(9, 0, 64, 0.08)',
+            }}
+            px={3}
+            py={2}
           >
-            <Typography fontSize={16} color="text.secondary">
-              Sit back and relax...
-            </Typography>
+            <Box display="flex" alignItems="center" gap={2}>
+              <Box className="loading-dots">
+                <Box className="loading-dot" />
+                <Box className="loading-dot" />
+                <Box className="loading-dot" />
+              </Box>
+              <Typography 
+                fontSize={14} 
+                sx={{ 
+                  color: 'rgba(9, 0, 64, 0.7)',
+                  fontStyle: 'italic'
+                }}
+              >
+                AI is thinking...
+              </Typography>
+            </Box>
           </Box>
         )}
 
@@ -202,7 +293,13 @@ function ChatInterface() {
       </Box>
 
       {/* Input */}
-      <Box p={3} borderTop="1px solid #e0e0e0">
+      <Box 
+        p={3} 
+        sx={{
+          background: '#ffffff',
+          borderTop: '1px solid rgba(177, 59, 255, 0.1)',
+        }}
+      >
         <Formik
           initialValues={{ description: '' }}
           validationSchema={ChatSchema}
@@ -217,35 +314,58 @@ function ChatInterface() {
                     minRows={1}
                     maxRows={4}
                     name="description"
-                    placeholder="Write description to create..."
+                    placeholder="Type your message..."
                     value={values.description}
                     onChange={handleChange}
                     error={touched.description && Boolean(errors.description)}
                     helperText={touched.description && errors.description}
                     sx={{
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#a855f7',
+                      '& .MuiOutlinedInput-root': {
+                        background: '#ffffff',
+                        borderRadius: '12px',
+                        '& fieldset': {
+                          borderColor: 'rgba(177, 59, 255, 0.2)',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'rgba(177, 59, 255, 0.4)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#B13BFF',
+                          borderWidth: '2px',
+                        },
                       },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ec4899',
+                      '& .MuiInputLabel-root': {
+                        color: 'rgba(9, 0, 64, 0.7)',
                       },
-                      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#fb923c',
+                      '& .MuiOutlinedInput-input': {
+                        color: '#090040',
+                        '&::placeholder': {
+                          color: 'rgba(9, 0, 64, 0.5)',
+                          opacity: 1,
+                        },
                       },
                     }}
                   />
                 </Box>
                 <Button
                   type="submit"
+                  variant="contained"
                   sx={{
-                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    background: '#471396',
                     color: 'white',
-                    width: 48,
-                    height: 48,
-                    minWidth: 48,
-                    borderRadius: 2,
+                    width: 56,
+                    height: 56,
+                    minWidth: 56,
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(71, 19, 150, 0.2)',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                      background: '#B13BFF',
+                      transform: 'translateY(-1px)',
+                      boxShadow: '0 4px 12px rgba(177, 59, 255, 0.3)',
+                    },
+                    '&:active': {
+                      transform: 'translateY(0)',
                     },
                   }}
                 >

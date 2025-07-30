@@ -1,14 +1,223 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 body {
-  background: #F3F4F6;
+  background: #090040;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Minimalistic Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-4px); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.6; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+/* Minimalistic Floating Background Elements */
+.floating-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(177, 59, 255, 0.03);
+  border: 1px solid rgba(177, 59, 255, 0.08);
+  animation-duration: 12s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.floating-circle:nth-child(1) {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  left: 5%;
+  animation-name: subtleFloat;
+  animation-delay: 0s;
+}
+
+.floating-circle:nth-child(2) {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 10%;
+  animation-name: subtleFloat;
+  animation-delay: 4s;
+}
+
+.floating-circle:nth-child(3) {
+  width: 160px;
+  height: 160px;
+  bottom: 15%;
+  left: 60%;
+  animation-name: subtleFloat;
+  animation-delay: 8s;
+}
+
+.floating-circle:nth-child(4) {
+  width: 80px;
+  height: 80px;
+  top: 30%;
+  right: 30%;
+  animation-name: subtleFloat;
+  animation-delay: 2s;
+}
+/* Clean Minimalistic Card Styles */
+.clean-card {
+  background: #ffffff;
+  border: 1px solid rgba(177, 59, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(9, 0, 64, 0.08);
+  transition: all 0.2s ease;
+}
+
+.clean-card:hover {
+  box-shadow: 0 4px 16px rgba(9, 0, 64, 0.12);
+  border-color: rgba(177, 59, 255, 0.2);
+}
+
+/* Professional Text Styles */
+.gradient-text {
+  background: linear-gradient(135deg, #B13BFF 0%, #FFCC00 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 600;
+}
+
+/* Clean Avatar Ring */
+.avatar-ring {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #B13BFF;
+  border-radius: 50%;
+  background: transparent;
+}
+
+/* Clean Chat Bubble Styles */
+.chat-bubble-user {
+  background: #471396;
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 2px 8px rgba(71, 19, 150, 0.2);
+}
+
+.chat-bubble-ai {
+  background: #ffffff;
+  border: 1px solid rgba(177, 59, 255, 0.15);
+  color: #090040;
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 2px 8px rgba(9, 0, 64, 0.08);
+}
+
+/* Clean Loading Animation */
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #B13BFF;
+  animation: pulse 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* Clean Button Styles */
+.btn-primary {
+  background: #471396;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #B13BFF;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #FFCC00;
+  border: none;
+  border-radius: 8px;
+  color: #090040;
+  font-weight: 500;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #e6b800;
+  transform: translateY(-1px);
 }
 
 p {

@@ -14,13 +14,26 @@ import { useAuthorizedQuery } from '@/services/private/auth';
 function App() {
   const dispatch = useDispatch();
   const { data, isError, isLoading, isSuccess } = useAuthorizedQuery();
+  
   useEffect(() => {
     if (isSuccess) {
       dispatch(onLoggedIn(data));
     } else if (isError) dispatch(onLoggedOut());
   }, [data, dispatch, isError, isSuccess]);
 
-  return <ThemeProvider theme={theme}>{!isLoading && <AppRoutes />}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      {/* Professional Floating Background */}
+      <div className="floating-bg">
+        <div className="floating-circle"></div>
+        <div className="floating-circle"></div>
+        <div className="floating-circle"></div>
+        <div className="floating-circle"></div>
+      </div>
+      
+      {!isLoading && <AppRoutes />}
+    </ThemeProvider>
+  );
 }
 
 export default App;

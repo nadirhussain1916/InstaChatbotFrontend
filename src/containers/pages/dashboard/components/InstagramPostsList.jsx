@@ -94,37 +94,40 @@ function InstagramPostsList() {
   return (
     <Box
       sx={{
-        bgcolor: '#f9fafb',
-        borderRight: '1px solid #e5e7eb',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(255, 255, 255, 0.1)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {/* Custom Toggle */}
+      {/* Enhanced Custom Toggle */}
       <Box sx={{ p: isMobile ? 1 : 2, display: 'flex', justifyContent: 'center' }}>
         <Box
           sx={{
             width: 220,
             height: 50,
             borderRadius: 999,
-            background: 'linear-gradient(to right, #ec4899, #f97316)',
+            background: 'linear-gradient(45deg, #405de6, #833ab4, #c13584)',
             position: 'relative',
-            p: '4px',
+            p: '3px',
+            boxShadow: '0 8px 25px rgba(64, 93, 230, 0.3)',
           }}
         >
-          {/* Thumb */}
+          {/* Enhanced Thumb */}
           <Box
             sx={{
               position: 'absolute',
-              top: 2,
-              left: view === 'posts' ? 2 : 168,
+              top: 3,
+              left: view === 'posts' ? 3 : 167,
               width: 50,
-              height: 46,
-              backgroundColor: '#fff',
+              height: 44,
+              background: 'rgba(255, 255, 255, 0.95)',
               borderRadius: 999,
               transition: 'left 0.3s ease',
               zIndex: 4,
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
             }}
           />
 
@@ -147,9 +150,9 @@ function InstagramPostsList() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: view === 'posts' ? '#ec4899' : '#6b7280',
-                fontWeight: 600,
-                transition: 'color 0.3s ease',
+                color: view === 'posts' ? '#405de6' : 'rgba(255, 255, 255, 0.7)',
+                fontWeight: view === 'posts' ? 600 : 400,
+                transition: 'all 0.3s ease',
               }}
             >
               {view !== 'posts' && (
@@ -169,9 +172,9 @@ function InstagramPostsList() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: view === 'chat' ? '#f97316' : '#6b7280',
-                fontWeight: 600,
-                transition: 'color 0.3s ease',
+                color: view === 'chat' ? '#c13584' : 'rgba(255, 255, 255, 0.7)',
+                fontWeight: view === 'chat' ? 600 : 400,
+                transition: 'all 0.3s ease',
               }}
             >
               {view !== 'chat' && (
@@ -191,18 +194,18 @@ function InstagramPostsList() {
         px: isMobile ? 2 : 3,
         pb: 3,
         '&::-webkit-scrollbar': {
-          width: '3px',
+          width: '4px',
         },
         '&::-webkit-scrollbar-track': {
-          backgroundColor: '#f3f4f6',
-          borderRadius: '4px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '2px',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: '#a855f7',
-          borderRadius: '4px',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: '#9333ea',
+          background: 'linear-gradient(45deg, #405de6, #833ab4)',
+          borderRadius: '2px',
+          '&:hover': {
+            background: 'linear-gradient(45deg, #364fc7, #7c3aed)',
+          },
         },
       }}
     >
@@ -229,7 +232,7 @@ function InstagramPostsList() {
               variant="contained"
               fullWidth
               sx={{
-                background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                background: 'linear-gradient(45deg, #405de6, #833ab4, #c13584)',
                 color: '#fff',
                 fontWeight: 600,
                 textTransform: 'none',
@@ -237,8 +240,12 @@ function InstagramPostsList() {
                 py: 1.5,
                 mt: 2.1,
                 fontSize: '1rem',
+                boxShadow: '0 8px 25px rgba(64, 93, 230, 0.3)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
+                  background: 'linear-gradient(45deg, #364fc7, #7c3aed, #be185d)',
+                  boxShadow: '0 12px 35px rgba(64, 93, 230, 0.4)',
+                  transform: 'translateY(-2px)',
                 },
               }}
             >
@@ -283,7 +290,7 @@ function InstagramPostsList() {
               variant="contained"
               fullWidth
               sx={{
-                background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                background: 'linear-gradient(45deg, #405de6, #833ab4, #c13584)',
                 color: '#fff',
                 fontWeight: 600,
                 textTransform: 'none',
@@ -291,8 +298,12 @@ function InstagramPostsList() {
                 py: 1.5,
                 fontSize: '1rem',
                 mb: 2,
+                boxShadow: '0 8px 25px rgba(64, 93, 230, 0.3)',
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: 'linear-gradient(to right, #9333ea, #db2777, #f97316)',
+                  background: 'linear-gradient(45deg, #364fc7, #7c3aed, #be185d)',
+                  boxShadow: '0 12px 35px rgba(64, 93, 230, 0.4)',
+                  transform: 'translateY(-2px)',
                 },
               }}
             >
@@ -310,7 +321,10 @@ function InstagramPostsList() {
                   py: 1.5,
                   borderRadius: 2,
                   cursor: 'pointer',
-                  '&:hover': { bgcolor: '#f3f4f6' },
+                  '&:hover': { 
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                  },
                   position: 'relative',
                 }}
                 onClick={() => {

@@ -1,0 +1,158 @@
+/* Clean Minimalistic Layout Module Styles */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #090040;
+  position: relative;
+  overflow: hidden;
+}
+
+.chatContainer {
+  background: #ffffff;
+  border: 1px solid rgba(177, 59, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(9, 0, 64, 0.1);
+  overflow: hidden;
+}
+
+.headerSection {
+  background: #ffffff;
+  border-bottom: 1px solid rgba(177, 59, 255, 0.1);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatMessagesArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background: #ffffff;
+  max-height: calc(100vh - 200px);
+  
+  /* Clean Scrollbar */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(177, 59, 255, 0.05);
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(177, 59, 255, 0.3);
+    border-radius: 2px;
+    
+    &:hover {
+      background: rgba(177, 59, 255, 0.5);
+    }
+  }
+}
+
+.inputSection {
+  background: #ffffff;
+  border-top: 1px solid rgba(177, 59, 255, 0.1);
+  padding: 20px 24px;
+}
+
+.messageCard {
+  background: #ffffff;
+  border: 1px solid rgba(177, 59, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+  animation: fadeInUp 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(9, 0, 64, 0.08);
+  }
+}
+
+.cleanButton {
+  background: #471396;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: #B13BFF;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.accentButton {
+  background: #FFCC00;
+  color: #090040;
+  
+  &:hover {
+    background: #e6b800;
+  }
+}
+
+.cleanCard {
+  background: #ffffff;
+  border: 1px solid rgba(177, 59, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(9, 0, 64, 0.06);
+  transition: all 0.2s ease;
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16A34A;
+  animation: pulse 2s infinite;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .chatMessagesArea {
+    padding: 16px;
+    max-height: calc(100vh - 180px);
+  }
+  
+  .headerSection,
+  .inputSection {
+    padding: 16px;
+  }
+  
+  .cleanButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
