@@ -50,7 +50,7 @@ function SignUpPage() {
     setLoading(true);
 
     const loginResp = await login({ ...values });
-
+    console.log('check_my_story007', loginResp?.data);
     if (loginResp?.data) {
       dispatch(onLoggedIn(loginResp?.data));
       getData({ ...values });

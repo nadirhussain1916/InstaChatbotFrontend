@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Typography, Button, TextField, CircularProgress, Chip, Menu, MenuItem, Avatar, useTheme, useMediaQuery
 } from '@mui/material';
-import image from "@assets/logo.png";
+import image from "@assets/isntagram.png";
 import { chatFlowJson } from '../utilis/data';
 import useAuth from '@/hooks/useAuth';
 import { useAuthorizedQuery } from '@/services/private/auth';
@@ -80,8 +80,8 @@ function Chat() {
     switch (step) {
       case 'greeting': {
         setAnswers({});
-        setAnswers(ans => ({ ...ans, contentType: input }));
-        setConversationState({ step: 'contentTypeSelected', contentType: input });
+        setAnswers(ans => ({ ...ans, ContentType: input }));
+        setConversationState({ step: 'contentTypeSelected', ContentType: input });
 
         simulateTyping(() => {
           const typeData = findTypeData(input);

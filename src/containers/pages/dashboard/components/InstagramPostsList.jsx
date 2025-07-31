@@ -320,6 +320,8 @@ function InstagramPostsList() {
                   px: 2,
                   py: 1.5,
                   borderRadius: 2,
+                   bgcolor: 'rgba(255, 255, 255, 0.1)',
+                   border:'1px solid rgba(255, 255, 255, 0.1)',
                   cursor: 'pointer',
                   '&:hover': { 
                     bgcolor: 'rgba(255, 255, 255, 0.1)',
@@ -332,7 +334,7 @@ function InstagramPostsList() {
                   navigate(`/new-chat/${chat?.thread_id}`);
                 }}
               >
-                <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box sx={{ flex: 1, minWidth: 0, }}>
                   {editingIndex === index ? (
                     <TextField
                       value={editValue}
@@ -359,7 +361,7 @@ function InstagramPostsList() {
                       variant="body1"
                       sx={{
                         fontWeight: 500,
-                        color: '#111827',
+                        color: 'white',
                         fontSize: '0.95rem',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
@@ -372,7 +374,7 @@ function InstagramPostsList() {
                   <Typography
                     variant="caption"
                     sx={{
-                      color: '#6b7280',
+                      color: 'white',
                       fontSize: '0.75rem',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',

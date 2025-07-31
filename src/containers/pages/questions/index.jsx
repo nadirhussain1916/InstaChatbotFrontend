@@ -1511,10 +1511,12 @@ function Questions() {
               <Button
                 disabled={isLoading}
                 variant="contained"
-                onClick={() => {
+                onClick={async () => {
                   const output = generateOutput();
-                  const resp = submitQuestion(output).unwrap();
-                  if (resp) {
+                  const resp = await submitQuestion(output).unwrap();
+                  console.log(resp?.message);
+                  
+                  if (resp?.message) {
                     dispatch(updateUserDetail({ has_answered: true }));
                     navigate("/");
                   }

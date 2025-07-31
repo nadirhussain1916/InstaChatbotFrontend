@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Typography, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/utilities/constants';
-import image from "@assets/logo.png";
+import image from "@assets/isntagram.png";
 
 function removeSquareBrackets(text) {
   if (!text) return '';
@@ -106,6 +106,7 @@ function ChatMessage({ message, profile, showTyping = false }) {
               lineHeight: 1.6,
               fontSize: '0.875rem',
               fontWeight: 400,
+              color: isUser ? '#ffffff' : '#090040',
             }}
           >
             {typedText}
@@ -135,7 +136,7 @@ function ChatMessage({ message, profile, showTyping = false }) {
               opacity: 0.7,
               fontSize: '0.75rem',
               textAlign: isUser ? 'right' : 'left',
-              color: isUser ? 'rgba(255, 255, 255, 0.8)' : 'rgba(9, 0, 64, 0.6)',
+              color: isUser ? 'rgba(251, 241, 241, 0.8)' : 'rgba(64, 62, 78, 0.6)',
             }}
           >
             {message.timestamp}
