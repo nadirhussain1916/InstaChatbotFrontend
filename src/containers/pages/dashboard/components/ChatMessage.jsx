@@ -3,6 +3,7 @@ import { Box, Typography, Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/utilities/constants';
 import image from "@assets/isntagram.png";
+import dayjs from 'dayjs';
 
 function removeSquareBrackets(text) {
   if (!text) return '';
@@ -139,7 +140,7 @@ function ChatMessage({ message, profile, showTyping = false }) {
               color: isUser ? 'rgba(251, 241, 241, 0.8)' : 'rgba(64, 62, 78, 0.6)',
             }}
           >
-            {message.timestamp}
+            {dayjs(message.timestamp).format('hh mm A')}
           </Typography>
         </Box>
       </Box>
