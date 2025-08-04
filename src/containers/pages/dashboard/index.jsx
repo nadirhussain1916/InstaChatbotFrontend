@@ -78,11 +78,7 @@ function Dashboard() {
             background: 'rgba(0, 0, 0, 0.2)',
             backdropFilter: 'blur(10px)',
           }}>
-            {location.pathname === '/' ? (
-              <Chat />
-            ) : (
-              <ChatInterface />
-            )}
+            <Chat />
           </Box>
         )}
       </Box>

@@ -31,7 +31,7 @@ function AppRoutes() {
               <Route element={<PrivateRoutes />}>
                 <Route path='/' element={<Dashboard />} />
                 <Route path="question" element={<Question />} />
-                <Route path="new-chat/:id" element={<Dashboard />} />
+                <Route path="chat/:id" element={<Dashboard />} />
               </Route>
 
           </Routes>

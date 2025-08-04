@@ -55,7 +55,7 @@ function InstagramPostsList() {
   }, [previousChat]);
 
   const handleClickNewChat = async () => {
-      navigate('/');
+      navigate('/chat');
   };
 
   const handleMenuOpen = (event, idx) => {
@@ -331,7 +331,7 @@ function InstagramPostsList() {
                 }}
                 onClick={() => {
                   if (editingIndex === index) return;
-                  navigate(`/new-chat/${chat?.thread_id}`);
+                  navigate(`/chat/${chat?.thread_id}`);
                 }}
               >
                 <Box sx={{ flex: 1, minWidth: 0, }}>

@@ -335,7 +335,7 @@ function DynamicChatFlow() {
             };
             const response = await createChat(payload);
             if (response?.data) {
-              navigate(`/new-chat/${response?.data?.thread_id}`);
+              navigate(`/chat/${response?.data?.thread_id}`);
             }
           }}
         >
