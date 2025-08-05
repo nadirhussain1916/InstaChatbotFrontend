@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box, Typography, Button, TextField, CircularProgress, Chip, Menu, MenuItem, Avatar, useTheme, useMediaQuery
 } from '@mui/material';
@@ -21,40 +22,57 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { useGetQuestionRespQuery } from '@/services/private/questions';
 import SectionLoader from '@/containers/common/loaders/SectionLoader';
 import { useParams } from 'react-router-dom';
+import {
+  addMessage,
+  setMessages,
+  setIsTyping,
+  setStreamingMessageId,
+  setShowGreeting,
+  setSavedThreadId,
+  setSelectedContentType,
+  setAnchorEl,
+} from '@/store/slices/chatSlice';
 
 const ChatSchema = Yup.object({
   description: Yup.string().trim().required('Description is required'),
 });
 
 function Chat() {
-  // Simplified state - using only chatMessages for all chat interactions
-  const [chatMessages, setChatMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [streamingMessageId, setStreamingMessageId] = useState(null);
-  const [showGreeting, setShowGreeting] = useState(true);
-  const [savedThreadId, setSavedThreadId] = useState('');
-  const [selectedContentType, setSelectedContentType] = useState('');
+  const dispatch = useDispatch();
+  const {
+    chatMessages,
+    isTyping,
+    streamingMessageId,
+    showGreeting,
+    savedThreadId,
+    selectedContentType,
+    anchorEl,
+  } = useSelector(state => state.chat);
+  
   const messagesEndRef = useRef(null);
-  const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-  const handleAvatarClick = e => setAnchorEl(e.currentTarget);
+  const handleAvatarClick = e => dispatch(setAnchorEl(e.currentTarget));
   const { handleLogout } = useAuth();
   const { data } = useAuthorizedQuery();
   const [createChat, { isLoading }] = useCreateChatMutation();
   const { id } = useParams();
 
-  const { data: chatDetail } = useGetChatDetailQuery(id);
+  const { data: chatDetail, isLoading: chatDetailLoading,isFetching: chatDetailFetching } = useGetChatDetailQuery(id, {
+    skip: !id, // Skip query if no id is provided
+    // refetchOnMountOrArgChange: true, // Always refetch when component mounts or args change
+    // refetchOnFocus: true, // Refetch when window regains focus
+  });
   const { data: aiResp, isLoading: loadingQuestions } = useGetQuestionRespQuery();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleMenuClose = () => dispatch(setAnchorEl(null));
   const handleAppLogout = () => {
     handleLogout();
     handleMenuClose();
     window.location.reload();
   };
-
+  console.log("Loading states:", { loadingQuestions, chatDetailLoading, id, hasData: !!chatDetail });
   const handleSubmit = async (values, { resetForm }) => {
     // Validate trimmed input
     const trimmedMessage = values.description.trim();
@@ -68,13 +86,13 @@ function Chat() {
       timestamp 
     };
     
-    setChatMessages(prev => [...prev, userMessage]);
+    dispatch(addMessage(userMessage));
     resetForm();
-    setIsTyping(true);
-    setShowGreeting(false); // Hide greeting when user starts chatting
+    dispatch(setIsTyping(true));
+    dispatch(setShowGreeting(false)); // Hide greeting when user starts chatting
 
     try {
-      // Determine if this is the first message (no saved thread_id)
+      // Determine if this is the first message (no saved thread_id and no existing ID)
       const isFirstMessage = !savedThreadId && !id;
       
       const payload = {
@@ -92,7 +110,7 @@ function Chat() {
 
       // Save thread_id from response if it's the first message
       if (isFirstMessage && resp?.data?.thread_id) {
-        setSavedThreadId(resp.data.thread_id);
+        dispatch(setSavedThreadId(resp.data.thread_id));
       }
 
       if (Array.isArray(slidesRaw)) {
@@ -106,8 +124,8 @@ function Chat() {
           };
           
           setTimeout(() => {
-            setChatMessages(prev => [...prev, aiMessage]);
-            if (idx === 0) setStreamingMessageId(aiMessage.id);
+            dispatch(addMessage(aiMessage));
+            if (idx === 0) dispatch(setStreamingMessageId(aiMessage.id));
           }, idx * 500); // Stagger multiple messages
         });
       } else if (typeof slidesRaw === 'string') {
@@ -118,13 +136,13 @@ function Chat() {
           timestamp: new Date().toLocaleTimeString(),
         };
         
-        setChatMessages(prev => [...prev, aiMessage]);
-        setStreamingMessageId(aiMessage.id);
+        dispatch(addMessage(aiMessage));
+        dispatch(setStreamingMessageId(aiMessage.id));
       }
 
       // Clear streaming after a delay
       setTimeout(() => {
-        setStreamingMessageId(null);
+        dispatch(setStreamingMessageId(null));
       }, 2000);
 
     } catch (error) {
@@ -136,10 +154,10 @@ function Chat() {
         type: 'ai',
         timestamp: new Date().toLocaleTimeString(),
       };
-      setChatMessages(prev => [...prev, errorMessage]);
-      setStreamingMessageId(null);
+      dispatch(addMessage(errorMessage));
+      dispatch(setStreamingMessageId(null));
     } finally {
-      setIsTyping(false);
+      dispatch(setIsTyping(false));
     }
   };
 
@@ -158,18 +176,37 @@ function Chat() {
   // Load existing chat messages
   useEffect(() => {
     if (Array.isArray(chatDetail?.messages) && chatDetail?.messages.length > 0) {
-      setChatMessages(
-        chatDetail.messages.map(msg => ({
-          id: msg.id,
-          content: msg.message,
-          type: msg.sender === 'user' ? 'user' : 'ai',
-          timestamp: msg.timestamp,
-        }))
-      );
-      setShowGreeting(false); // Hide greeting if there are existing messages
-      setStreamingMessageId(null);
+      const formattedMessages = chatDetail.messages.map(msg => ({
+        id: msg.id,
+        content: msg.message,
+        type: msg.sender === 'user' ? 'user' : 'ai',
+        timestamp: msg.timestamp,
+      }));
+      dispatch(setMessages(formattedMessages));
+      dispatch(setShowGreeting(false)); // Hide greeting if there are existing messages
+      dispatch(setStreamingMessageId(null));
+    } else if (chatDetail && (!chatDetail.messages || chatDetail.messages.length === 0)) {
+      // If chat exists but has no messages, show greeting
+      dispatch(setMessages([]));
+      dispatch(setShowGreeting(true));
+      dispatch(setStreamingMessageId(null));
     }
-  }, [chatDetail]);
+  }, [chatDetail, dispatch]);
+
+  // Handle route changes and thread ID management
+  useEffect(() => {
+    if (id) {
+      // When navigating to a specific chat, set the thread ID
+      if (id !== savedThreadId) {
+        dispatch(setSavedThreadId(id));
+      }
+    } else {
+      // When navigating to new chat (/chat), reset completely
+      dispatch(setShowGreeting(true));
+      dispatch(setMessages([]));
+      dispatch(setSavedThreadId(''));
+    }
+  }, [id, dispatch, savedThreadId]);
 
   const handleOptionClick = option => {
     const userMessage = {
@@ -179,12 +216,12 @@ function Chat() {
       timestamp: new Date().toLocaleTimeString(),
     };
     
-    setChatMessages(prev => [...prev, userMessage]);
-    setShowGreeting(false);
-    setSelectedContentType(option); // Set the selected content type
+    dispatch(addMessage(userMessage));
+    dispatch(setShowGreeting(false));
+    dispatch(setSelectedContentType(option)); // Set the selected content type
     
     // Add a response based on the option selected
-    setIsTyping(true);
+    dispatch(setIsTyping(true));
     setTimeout(() => {
       const typeData = chatFlowJson.content_creator.types.find(t => t.type === option);
       const responseMessage = {
@@ -193,8 +230,8 @@ function Chat() {
         type: 'ai',
         timestamp: new Date().toLocaleTimeString(),
       };
-      setChatMessages(prev => [...prev, responseMessage]);
-      setIsTyping(false);
+      dispatch(addMessage(responseMessage));
+      dispatch(setIsTyping(false));
     }, 1000);
   };
 
@@ -285,7 +322,7 @@ function Chat() {
         </Box>
       </Box>
 
-      {loadingQuestions ? (
+      {(loadingQuestions || chatDetailLoading || chatDetailFetching) ? (
         <SectionLoader />
       ) : (
         <React.Fragment>

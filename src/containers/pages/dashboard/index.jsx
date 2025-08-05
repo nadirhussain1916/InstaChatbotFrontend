@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, IconButton, useTheme, useMediaQuery } from '@mui/material';
 import InstagramPostsList from './components/InstagramPostsList';
-import ChatInterface from './components/ChatInterface';
 import { useLocation } from 'react-router-dom';
 import Chat from './components/Chat';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';

@@ -30,6 +30,7 @@ function AppRoutes() {
               {/* Private routes */}
               <Route element={<PrivateRoutes />}>
                 <Route path='/' element={<Dashboard />} />
+                <Route path='chat/' element={<Dashboard />} />
                 <Route path="question" element={<Question />} />
                 <Route path="chat/:id" element={<Dashboard />} />
               </Route>

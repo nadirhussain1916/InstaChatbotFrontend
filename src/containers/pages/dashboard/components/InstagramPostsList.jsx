@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -19,8 +20,10 @@ import { useGetUserPostQuery } from '@/services/private/post';
 import { useDeleteChatMutation, useGetPreviousChatQuery, useUpdateChatTitleMutation, } from '@/services/private/chat';
 import SectionSkeletonLoader from '@/containers/common/loaders/SectionSkeletonLoader';
 import { truncateMessage } from '@/utilities/helpers';
+import { resetChatCompletely } from '@/store/slices/chatSlice';
 
 function InstagramPostsList() {
+  const dispatch = useDispatch();
   const [enableQuery, setEnableQuery] = useState(false);
 
   useEffect(() => {
@@ -55,6 +58,8 @@ function InstagramPostsList() {
   }, [previousChat]);
 
   const handleClickNewChat = async () => {
+      // Reset chat state completely before navigating to new chat
+      dispatch(resetChatCompletely());
       navigate('/chat');
   };
 
