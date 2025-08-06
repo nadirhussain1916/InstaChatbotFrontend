@@ -72,7 +72,6 @@ function Chat() {
     handleMenuClose();
     window.location.reload();
   };
-  console.log("Loading states:", { loadingQuestions, chatDetailLoading, id, hasData: !!chatDetail });
   const handleSubmit = async (values, { resetForm }) => {
     // Validate trimmed input
     const trimmedMessage = values.description.trim();
@@ -112,6 +111,8 @@ function Chat() {
       if (isFirstMessage && resp?.data?.thread_id) {
         dispatch(setSavedThreadId(resp.data.thread_id));
       }
+
+      console.log("Loading states:", { savedThreadId , id ,data : resp?.data});
 
       if (Array.isArray(slidesRaw)) {
         // Handle multiple responses
@@ -200,7 +201,7 @@ function Chat() {
       if (id !== savedThreadId) {
         dispatch(setSavedThreadId(id));
       }
-    } else {
+    } else if(!savedThreadId) {
       // When navigating to new chat (/chat), reset completely
       dispatch(setShowGreeting(true));
       dispatch(setMessages([]));
