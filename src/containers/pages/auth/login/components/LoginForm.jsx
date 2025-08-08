@@ -202,7 +202,7 @@ function LoginPage() {
 
                   <TextField
                     fullWidth
-                    placeholder="Instagram Password"
+                    placeholder="Enter Password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}

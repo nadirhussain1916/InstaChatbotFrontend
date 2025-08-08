@@ -204,7 +204,7 @@ function SignUpPage() {
 
                   <TextField
                     fullWidth
-                    placeholder="Instagram Password"
+                    placeholder="Enter New Password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
