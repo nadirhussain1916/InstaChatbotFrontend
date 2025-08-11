@@ -9,6 +9,7 @@ import Dashboard from '@/containers/pages/dashboard';
 import Question from '@/containers/pages/questions';
 import SignUp from '@/containers/pages/auth/signup';
 import ChangePassword from '@/containers/pages/auth/changePassword';
+import EditPromptsForm from '@/containers/pages/admin';
 // LAZY LOAD
 const Login = lazy(() => import('@containers/pages/auth/login'));
 
@@ -33,6 +34,7 @@ function AppRoutes() {
                 <Route path='chat/' element={<Dashboard />} />
                 <Route path="question" element={<Question />} />
                 <Route path="chat/:id" element={<Dashboard />} />
+                <Route path="edit-prompts" element={<EditPromptsForm />} />
               </Route>
 
           </Routes>

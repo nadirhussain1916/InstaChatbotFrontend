@@ -125,30 +125,16 @@ function ChangePassword() {
               isSubmitting,
             }) => (
               <Form style={{ width: '100%', maxWidth: 400 }}>
-<TextField
+                <TextField
                   fullWidth
-                  placeholder="Add Old Password"
-                  name="current_password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={values.password}
+                  placeholder="Enter Old Password"
+                  name="username"
+                  type='text'
+                  value={values.username}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.password && Boolean(errors.password)}
-                  helperText={touched.password && errors.password}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(prev => !prev)} edge="end">
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
                   variant="outlined"
                   sx={{
                     mb: 2,
@@ -230,6 +216,23 @@ function ChangePassword() {
                   ) : (
                     'Submit'
                   )}
+                </Button>
+                <Button
+                  fullWidth
+                  size="large"
+                  variant="contained"
+                  type="submit"
+                  disabled={loading || isSubmitting}
+                  sx={{
+                    mb: 2,
+                    background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
+                    },
+                  }}
+                  onClick={() => navigate('/auth/login')}
+                >
+                  Back to Login
                 </Button>
               </Form>
             )}

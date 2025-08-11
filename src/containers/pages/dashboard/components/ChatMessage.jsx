@@ -128,7 +128,7 @@ function ChatMessage({ message, profile, showTyping = false }) {
             )}
           </Typography>
           
-          {/* Timestamp */}
+          {/* Timestamp
           <Typography 
             variant="caption" 
             sx={{ 
@@ -141,7 +141,7 @@ function ChatMessage({ message, profile, showTyping = false }) {
             }}
           >
             {dayjs(message.timestamp).format('hh mm A')}
-          </Typography>
+          </Typography> */}
         </Box>
       </Box>
     </Box>
