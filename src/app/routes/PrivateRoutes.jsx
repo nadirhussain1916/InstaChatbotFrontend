@@ -17,12 +17,12 @@ function PrivateRoutes() {
   if (isAuthenticated) {
 
     // If admin and has not answered, always redirect to edit-prompts
-    if (user?.role === 'admin' && user?.has_answered === false && pathname !== '/edit-prompts') {
-      return <Navigate to="/edit-prompts" replace />;
-    }
+    // if (user?.role === 'admin' && user?.has_answered === false && pathname !== '/edit-prompts') {
+    //   return <Navigate to="/edit-prompts" replace />;
+    // }
 
     // If user is not admin and has not answered, redirect to questions unless already there
-    if (user?.role !== 'admin' && user?.has_answered === false && pathname !== '/question') {
+    if (user?.has_answered === false && pathname !== '/question') {
       return <Navigate to="/question" replace />;
     }
 

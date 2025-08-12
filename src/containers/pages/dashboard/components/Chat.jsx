@@ -21,7 +21,7 @@ import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import MovieIcon from '@mui/icons-material/Movie';
 import { useGetQuestionRespQuery } from '@/services/private/questions';
 import SectionLoader from '@/containers/common/loaders/SectionLoader';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   addMessage,
   setMessages,
@@ -48,7 +48,7 @@ function Chat() {
     selectedContentType,
     anchorEl,
   } = useSelector(state => state.chat);
-  
+
   const messagesEndRef = useRef(null);
   const openMenu = Boolean(anchorEl);
   const handleAvatarClick = e => dispatch(setAnchorEl(e.currentTarget));
@@ -56,8 +56,9 @@ function Chat() {
   const { data } = useAuthorizedQuery();
   const [createChat, { isLoading }] = useCreateChatMutation();
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { data: chatDetail, isLoading: chatDetailLoading,isFetching: chatDetailFetching } = useGetChatDetailQuery(id, {
+  const { data: chatDetail, isLoading: chatDetailLoading, isFetching: chatDetailFetching } = useGetChatDetailQuery(id, {
     skip: !id, // Skip query if no id is provided
     // refetchOnMountOrArgChange: true, // Always refetch when component mounts or args change
     // refetchOnFocus: true, // Refetch when window regains focus
@@ -78,13 +79,13 @@ function Chat() {
     if (!trimmedMessage) return;
 
     const timestamp = new Date().toLocaleTimeString();
-    const userMessage = { 
-      id: Date.now(), 
-      content: trimmedMessage, 
-      type: 'user', 
-      timestamp 
+    const userMessage = {
+      id: Date.now(),
+      content: trimmedMessage,
+      type: 'user',
+      timestamp
     };
-    
+
     dispatch(addMessage(userMessage));
     resetForm();
     dispatch(setIsTyping(true));
@@ -93,7 +94,7 @@ function Chat() {
     try {
       // Determine if this is the first message (no saved thread_id and no existing ID)
       const isFirstMessage = !savedThreadId && !id;
-      
+
       const payload = {
         prompt: trimmedMessage,
         thread_id: savedThreadId || id || '',
@@ -112,7 +113,7 @@ function Chat() {
         dispatch(setSavedThreadId(resp.data.thread_id));
       }
 
-      console.log("Loading states:", { savedThreadId , id ,data : resp?.data});
+      console.log("Loading states:", { savedThreadId, id, data: resp?.data });
 
       if (Array.isArray(slidesRaw)) {
         // Handle multiple responses
@@ -123,7 +124,7 @@ function Chat() {
             type: 'ai',
             timestamp: new Date().toLocaleTimeString(),
           };
-          
+
           setTimeout(() => {
             dispatch(addMessage(aiMessage));
             if (idx === 0) dispatch(setStreamingMessageId(aiMessage.id));
@@ -136,7 +137,7 @@ function Chat() {
           type: 'ai',
           timestamp: new Date().toLocaleTimeString(),
         };
-        
+
         dispatch(addMessage(aiMessage));
         dispatch(setStreamingMessageId(aiMessage.id));
       }
@@ -201,7 +202,7 @@ function Chat() {
       if (id !== savedThreadId) {
         dispatch(setSavedThreadId(id));
       }
-    } else if(!savedThreadId) {
+    } else if (!savedThreadId) {
       // When navigating to new chat (/chat), reset completely
       dispatch(setShowGreeting(true));
       dispatch(setMessages([]));
@@ -216,11 +217,11 @@ function Chat() {
       type: 'user',
       timestamp: new Date().toLocaleTimeString(),
     };
-    
+
     dispatch(addMessage(userMessage));
     dispatch(setShowGreeting(false));
     dispatch(setSelectedContentType(option)); // Set the selected content type
-    
+
     // Add a response based on the option selected
     dispatch(setIsTyping(true));
     setTimeout(() => {
@@ -306,6 +307,19 @@ function Chat() {
             >
               Logout
             </MenuItem>
+            {data?.role === 'admin' && (
+              <MenuItem
+                onClick={() => navigate('/edit-prompts')}
+                sx={{
+                  color: '#090040',
+                  '&:hover': {
+                    background: 'rgba(177, 59, 255, 0.08)',
+                  }
+                }}
+              >
+                Edit Prompts
+              </MenuItem>
+            )}
           </Menu>
           {!isMobile && (
             <Chip
@@ -392,7 +406,7 @@ function Chat() {
                   <Typography sx={{ fontWeight: 400, lineHeight: 1.6 }}>
                     {chatFlowJson.content_creator.greeting}
                   </Typography>
-                  
+
                   <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                     {chatFlowJson.content_creator.types.map((typeObj, i) => {
                       const opt = typeObj.type;
