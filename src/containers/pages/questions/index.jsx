@@ -24,7 +24,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
-  FormGroup
+  FormGroup,
 } from '@mui/material';
 import {
   ChevronRight,
@@ -60,12 +60,12 @@ import {
   Bookmark,
   ThumbUp,
   Person,
-  Business
+  Business,
 } from '@mui/icons-material';
 import { useAddQuestionMutation } from '@/services/private/questions';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { updateUserDetail } from "@/store/slices/authSlice";
+import { updateUserDetail } from '@/store/slices/authSlice';
 import { useAuthorizedQuery } from '@/services/private/auth';
 import { truncateUserName } from '@/utilities/helpers';
 
@@ -92,7 +92,8 @@ function Questions() {
     testimonials: '',
     connections: [],
     consent: false,
-    additionalFeatures: ''
+    additionalFeatures: '',
+    weburl: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -100,24 +101,24 @@ function Questions() {
   const helpOptions = [
     {
       text: 'Growing your audience on Instagram with the right people',
-      icon: <People />
+      icon: <People />,
     },
     {
       text: 'Selling your offers (without the ick)',
-      icon: <TrendingUp />
+      icon: <TrendingUp />,
     },
     {
       text: 'Creating for Instagram (minus the burnout)',
-      icon: <CameraAlt />
+      icon: <CameraAlt />,
     },
     {
-      text: 'Writing better emails (so your list doesn\'t forget you exist)',
-      icon: <Mail />
+      text: "Writing better emails (so your list doesn't forget you exist)",
+      icon: <Mail />,
     },
     {
       text: 'Honestly? All of the above',
-      icon: <Star />
-    }
+      icon: <Star />,
+    },
   ];
 
   const voiceOptions = [
@@ -129,26 +130,26 @@ function Questions() {
     { text: 'Professional', icon: <Settings /> },
     { text: 'Story-driven', icon: <Message /> },
     { text: 'Playful', icon: <CameraAlt /> },
-    { text: 'No-fluff', icon: <Edit /> }
+    { text: 'No-fluff', icon: <Edit /> },
   ];
 
   const connectionOptions = [
     {
       text: 'Your photo album (so I can suggest visuals that match your post)',
-      icon: <Image />
+      icon: <Image />,
     },
     {
       text: 'Canva (for designing carousels and Reels covers without the guesswork)',
-      icon: <Edit />
+      icon: <Edit />,
     },
     {
       text: 'Your scheduler (Later, Metricool you pick and LMK if you want my affiliate link)',
-      icon: <Event />
+      icon: <Event />,
     },
     {
       text: 'Your calendar (Google, Notion, ClickUp — whatever you live inside)',
-      icon: <Schedule />
-    }
+      icon: <Schedule />,
+    },
   ];
 
   // Validation for each step
@@ -157,34 +158,44 @@ function Questions() {
     switch (currentStep) {
       case 2:
         if (!formData.firstName.trim()) stepErrors.firstName = 'First name is required';
-        if (!formData.helpWith.length) stepErrors.helpWith = 'Please select at least one option';
+        if (!formData.helpWith.length)
+          stepErrors.helpWith = 'Please select at least one option';
         break;
       case 3:
         if (!formData.brandName.trim()) stepErrors.brandName = 'Brand name is required';
         if (!formData.brandType.trim()) stepErrors.brandType = 'Brand type is required';
         if (!formData.industry.trim()) stepErrors.industry = 'Industry is required';
-        if (!formData.helpDescription.trim()) stepErrors.helpDescription = 'Description is required';
+        if (!formData.helpDescription.trim())
+          stepErrors.helpDescription = 'Description is required';
         if (!formData.website) stepErrors.website = 'Website is required';
         break;
       case 4:
         // Offers are optional, but if present, validate fields
         formData.offers.forEach((offer, idx) => {
-          if (!offer.name.trim()) stepErrors[`offer_name_${offer.id}`] = 'Offer name is required';
-          if (!offer.priceModel.trim()) stepErrors[`offer_priceModel_${offer.id}`] = 'Pricing model is required';
-          if (!offer.transformation.trim()) stepErrors[`offer_transformation_${offer.id}`] = 'Transformation is required';
+          if (!offer.name.trim())
+            stepErrors[`offer_name_${offer.id}`] = 'Offer name is required';
+          if (!offer.priceModel.trim())
+            stepErrors[`offer_priceModel_${offer.id}`] = 'Pricing model is required';
+          if (!offer.transformation.trim())
+            stepErrors[`offer_transformation_${offer.id}`] = 'Transformation is required';
         });
         break;
       case 5:
-        if (!formData.voiceTone.length) stepErrors.voiceTone = 'Select at least one voice tone';
+        if (!formData.voiceTone.length)
+          stepErrors.voiceTone = 'Select at least one voice tone';
         break;
       case 6:
-        if (!formData.originStory.trim()) stepErrors.originStory = 'Origin story is required';
-        if (!formData.challenges.trim()) stepErrors.challenges = 'Challenges are required';
+        if (!formData.originStory.trim())
+          stepErrors.originStory = 'Origin story is required';
+        if (!formData.challenges.trim())
+          stepErrors.challenges = 'Challenges are required';
         if (!formData.wins.trim()) stepErrors.wins = 'Wins are required';
-        if (!formData.testimonials.trim()) stepErrors.testimonials = 'Testimonials are required';
+        if (!formData.testimonials.trim())
+          stepErrors.testimonials = 'Testimonials are required';
         break;
       case 7:
-        if (!formData.additionalFeatures.trim()) stepErrors.additionalFeatures = 'This field is required';
+        if (!formData.additionalFeatures.trim())
+          stepErrors.additionalFeatures = 'This field is required';
         break;
       default:
         break;
@@ -212,7 +223,9 @@ function Questions() {
     const currentValues = formData.helpWith;
 
     if (value === allAboveOption) {
-      const allSelected = individualOptions.every(option => currentValues.includes(option));
+      const allSelected = individualOptions.every(option =>
+        currentValues.includes(option)
+      );
 
       if (allSelected) {
         // Unselect all
@@ -233,7 +246,9 @@ function Questions() {
       }
 
       // If all individual options are selected, add "All of the above"
-      const allNowSelected = individualOptions.every(option => newValues.includes(option));
+      const allNowSelected = individualOptions.every(option =>
+        newValues.includes(option)
+      );
       if (allNowSelected && !newValues.includes(allAboveOption)) {
         newValues.push(allAboveOption);
       }
@@ -263,11 +278,11 @@ function Questions() {
       id: Date.now().toString(),
       name: '',
       priceModel: '',
-      transformation: ''
+      transformation: '',
     };
     setFormData({
       ...formData,
-      offers: [...formData.offers, newOffer]
+      offers: [...formData.offers, newOffer],
     });
   };
 
@@ -276,36 +291,46 @@ function Questions() {
       ...formData,
       offers: formData.offers.map(offer =>
         offer.id === id ? { ...offer, [field]: value } : offer
-      )
+      ),
     });
   };
 
   const removeOffer = id => {
     setFormData({
       ...formData,
-      offers: formData.offers.filter(offer => offer.id !== id)
+      offers: formData.offers.filter(offer => offer.id !== id),
     });
   };
 
   const generateOutput = () => {
     // Build answers array from formData
     const answers = [
-      { question: "What is your role?", answer: formData.firstName },
-      { question: "What do you want help with most?", answer: formData.helpWith.join(', ') },
-      { question: "What is your brand or business name?", answer: formData.brandName },
-      { question: "Are you a personal brand or a product-based business?", answer: formData.brandType },
-      { question: "What industry or niche are you in?", answer: formData.industry },
-      { question: "In one sentence, what do you help people do?", answer: formData.helpDescription },
-      { question: "Offers", answer: JSON.stringify(formData.offers) },
-      { question: "Voice Tone", answer: formData.voiceTone.join(', ') },
-      { question: "Default post length", answer: formData.postLength },
-      { question: "Origin Story", answer: formData.originStory },
-      { question: "Challenges", answer: formData.challenges },
-      { question: "Wins", answer: formData.wins },
-      { question: "Testimonials", answer: formData.testimonials },
-      { question: "Connections", answer: formData.connections.join(', ') },
-      { question: "Consent", answer: formData.consent ? 'Yes' : 'No' },
-      { question: "Additional Features", answer: formData.additionalFeatures }
+      { question: 'What is your role?', answer: formData.firstName },
+      {
+        question: 'What do you want help with most?',
+        answer: formData.helpWith.join(', '),
+      },
+      { question: 'What is your brand or business name?', answer: formData.brandName },
+      {
+        question: 'Are you a personal brand or a product-based business?',
+        answer: formData.brandType,
+      },
+      { question: 'What industry or niche are you in?', answer: formData.industry },
+      {
+        question: 'In one sentence, what do you help people do?',
+        answer: formData.helpDescription,
+      },
+      { question: 'Offers', answer: JSON.stringify(formData.offers) },
+      { question: 'Voice Tone', answer: formData.voiceTone.join(', ') },
+      { question: 'Default post length', answer: formData.postLength },
+      { question: 'Origin Story', answer: formData.originStory },
+      { question: 'Challenges', answer: formData.challenges },
+      { question: 'Wins', answer: formData.wins },
+      { question: 'Testimonials', answer: formData.testimonials },
+      { question: 'Connections', answer: formData.connections.join(', ') },
+      { question: 'Consent', answer: formData.consent ? 'Yes' : 'No' },
+      { question: 'Additional Features', answer: formData.additionalFeatures },
+      { question: 'website url', answer: formData.weburl },
     ];
 
     const form = new FormData();
@@ -327,12 +352,13 @@ function Questions() {
                   sx={{
                     width: 80,
                     height: 80,
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #ef4444 50%, #8b5cf6 100%)',
+                    background:
+                      'linear-gradient(135deg, #fbbf24 0%, #ef4444 50%, #8b5cf6 100%)',
                     borderRadius: '50%',
                     padding: '4px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <Box
@@ -343,7 +369,7 @@ function Questions() {
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
                     }}
                   >
                     <Instagram sx={{ fontSize: 40, color: '#8b5cf6' }} />
@@ -360,7 +386,7 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <FlashOn sx={{ fontSize: 16, color: 'white' }} />
@@ -368,22 +394,34 @@ function Questions() {
               </Box>
             </Box>
 
-            <Typography variant="h2" className="fw-bold mb-4" sx={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>
+            <Typography
+              variant="h2"
+              className="fw-bold mb-4"
+              sx={{
+                background:
+                  'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               hello {truncateUserName(data?.full_name || data?.username)}
             </Typography>
             <Typography variant="h5" className="text-muted mb-3">
-              I am your new content partner <Typography component="span" sx={{
-                fontWeight: 'bold',
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>Daily Bread</Typography>.
+              I am your new content partner{' '}
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: 'bold',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Daily Bread
+              </Typography>
+              .
             </Typography>
             <Typography variant="h6" className="text-muted mb-3">
               You can call me Daily or DB.
@@ -392,14 +430,19 @@ function Questions() {
               I am excited to help you craft content that is anything but generic.
             </Typography>
             <Box className="d-flex align-items-center justify-content-center mb-4">
-              <Typography variant="h4" className="me-2">👉</Typography>
-              <Typography variant="body1" sx={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontWeight: 'medium'
-              }}>
+              <Typography variant="h4" className="me-2">
+                👉
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: 'medium',
+                }}
+              >
                 Hit next and let's begin, shall we?
               </Typography>
             </Box>
@@ -410,7 +453,8 @@ function Questions() {
               startIcon={<Favorite />}
               endIcon={<ChevronRight />}
               sx={{
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                background:
+                  'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                 borderRadius: '50px',
                 py: 2,
                 px: 4,
@@ -418,9 +462,10 @@ function Questions() {
                 textTransform: 'none',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
-                  transform: 'scale(1.05)'
-                }
+                  background:
+                    'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                  transform: 'scale(1.05)',
+                },
               }}
             >
               I'm ready
@@ -441,13 +486,15 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <People sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark">Who are you?</Typography>
+              <Typography variant="h3" className="fw-bold text-dark">
+                Who are you?
+              </Typography>
             </Box>
 
             <Box className="mb-4">
@@ -457,28 +504,28 @@ function Questions() {
                   First, what's your first name?
                 </Typography>
               </Box>
-            <TextField
-              fullWidth
-              required
-              variant="outlined"
-              value={formData.firstName}
-              onChange={e => setFormData({ ...formData, firstName: e.target.value })}
-              placeholder="Enter your first name"
-              error={!!errors.firstName}
-              helperText={errors.firstName}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  backgroundColor: '#f8f9fa',
-                  '&:hover': {
-                    backgroundColor: 'white'
+              <TextField
+                fullWidth
+                required
+                variant="outlined"
+                value={formData.firstName}
+                onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                placeholder="Enter your first name"
+                error={!!errors.firstName}
+                helperText={errors.firstName}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    backgroundColor: '#f8f9fa',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: 'white',
+                    },
                   },
-                  '&.Mui-focused': {
-                    backgroundColor: 'white'
-                  }
-                }
-              }}
-            />
+                }}
+              />
             </Box>
 
             <Box className="mb-4">
@@ -498,15 +545,17 @@ function Questions() {
                 {helpOptions.map(option => {
                   const allAboveOption = 'Honestly? All of the above';
                   const individualOptions = helpOptions.slice(0, 4).map(opt => opt.text);
-                  const isAllAboveSelected = option.text === allAboveOption &&
+                  const isAllAboveSelected =
+                    option.text === allAboveOption &&
                     individualOptions.every(indOpt => formData.helpWith.includes(indOpt));
-                  const isIndividualSelected = option.text !== allAboveOption &&
+                  const isIndividualSelected =
+                    option.text !== allAboveOption &&
                     formData.helpWith.includes(option.text);
                   const isSelected = isAllAboveSelected || isIndividualSelected;
                   return (
                     <Button
                       key={option.text}
-                      variant={isSelected ? "contained" : "outlined"}
+                      variant={isSelected ? 'contained' : 'outlined'}
                       onClick={() => handleHelpWithSelection(option.text)}
                       startIcon={option.icon}
                       endIcon={isSelected ? <Check /> : null}
@@ -519,16 +568,18 @@ function Questions() {
                         textTransform: 'none',
                         ...(isSelected
                           ? {
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                            color: 'white',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
+                              background:
+                                'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                              color: 'white',
+                              '&:hover': {
+                                background:
+                                  'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
+                              },
                             }
-                          }
                           : {
-                            borderColor: '#8b5cf6',
-                            color: '#8b5cf6',
-                          })
+                              borderColor: '#8b5cf6',
+                              color: '#8b5cf6',
+                            }),
                       }}
                     >
                       {option.text}
@@ -536,7 +587,9 @@ function Questions() {
                   );
                 })}
                 {errors.helpWith && (
-                  <Typography color="error" variant="caption" sx={{ mt: 1 }}>{errors.helpWith}</Typography>
+                  <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+                    {errors.helpWith}
+                  </Typography>
                 )}
               </Box>
             </Box>
@@ -548,15 +601,17 @@ function Questions() {
                   onClick={handleNext}
                   endIcon={<ChevronRight />}
                   sx={{
-                    background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                    background:
+                      'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                     borderRadius: '50px',
                     py: 1.5,
                     px: 3,
                     fontWeight: 'bold',
                     textTransform: 'none',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)'
-                    }
+                      background:
+                        'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                    },
                   }}
                 >
                   Next
@@ -579,15 +634,20 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <Star sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark mb-3">Your brand at a glance</Typography>
+              <Typography variant="h3" className="fw-bold text-dark mb-3">
+                Your brand at a glance
+              </Typography>
               <Typography variant="body1" className="text-muted mb-3">
-                Now let's make sure everything is right okay? Answer a few quick questions so your posts and emails actually sound like you and not some weird AI trying to wing it. I will not name names, but we know who I'm talking about…
+                Now let's make sure everything is right okay? Answer a few quick questions
+                so your posts and emails actually sound like you and not some weird AI
+                trying to wing it. I will not name names, but we know who I'm talking
+                about…
               </Typography>
             </Box>
 
@@ -613,8 +673,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -630,20 +690,26 @@ function Questions() {
                   <Select
                     required
                     value={formData.brandType}
-                    onChange={e => setFormData({ ...formData, brandType: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, brandType: e.target.value })
+                    }
                     displayEmpty
                     sx={{
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
+                      '&.Mui-focused': { backgroundColor: 'white' },
                     }}
                   >
                     <MenuItem value="">Select brand type</MenuItem>
                     <MenuItem value="personal">Personal Brand</MenuItem>
                     <MenuItem value="product">Product-Based Business</MenuItem>
                   </Select>
-                  {errors.brandType && <Typography color="error" variant="caption">{errors.brandType}</Typography>}
+                  {errors.brandType && (
+                    <Typography color="error" variant="caption">
+                      {errors.brandType}
+                    </Typography>
+                  )}
                 </FormControl>
               </Box>
 
@@ -668,8 +734,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -686,7 +752,9 @@ function Questions() {
                   required
                   variant="outlined"
                   value={formData.helpDescription}
-                  onChange={e => setFormData({ ...formData, helpDescription: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, helpDescription: e.target.value })
+                  }
                   placeholder="e.g., I help new moms get their babies to sleep without cry-it-out"
                   error={!!errors.helpDescription}
                   helperText={errors.helpDescription}
@@ -695,8 +763,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -708,27 +776,66 @@ function Questions() {
                     Have a website? Brand doc? Sales page?
                   </Typography>
                 </Box>
+
+                {/* Website URL */}
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
+                  value={formData.weburl}
+                  onChange={e => setFormData({ ...formData, weburl: e.target.value })}
+                  placeholder="Add your website url"
+                  error={!!errors.helpDescription}
+                  helperText={errors.helpDescription}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      backgroundColor: '#f8f9fa',
+                      '&:hover': { backgroundColor: 'white' },
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
+                  }}
+                />
+
                 <Box className="d-flex align-items-center mb-2">
                   <Link sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                   <Typography variant="body2" className="text-muted">
-                    Upload your file (PDF, DOC, etc.) so I can pull from your own words. Upload away (don't hold back here).
+                    Upload your file(s) (PDF, DOC, etc.) so I can pull from your own
+                    words.
                   </Typography>
                 </Box>
+
+                {/* Multiple File Upload */}
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx,.txt,.rtf"
+                  multiple
                   onChange={e => {
-                    setFormData({ ...formData, website: e.target.files[0] });
+                    const newFiles = Array.from(e.target.files);
+                    setFormData(prev => ({
+                      ...prev,
+                      website: prev.website ? [...prev.website, ...newFiles] : newFiles,
+                    }));
                   }}
                   style={{ marginBottom: 8 }}
                 />
-                {formData.website && (
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    Selected: {formData.website.name}
-                  </Typography>
+
+                {/* Show all selected files */}
+                {formData.website && formData.website.length > 0 && (
+                  <Box sx={{ mt: 1 }}>
+                    {formData.website.map((file, index) => (
+                      <Typography key={index} variant="body2" color='black'>
+                        📄 {file.name}
+                      </Typography>
+                    ))}
+                  </Box>
                 )}
+
+                {/* Show error */}
                 {errors.website && (
-                  <Typography color="error" variant="caption">{errors.website}</Typography>
+                  <Typography color="error" variant="caption">
+                    {errors.website}
+                  </Typography>
                 )}
               </Box>
             </Box>
@@ -755,15 +862,17 @@ function Questions() {
                 onClick={handleNext}
                 endIcon={<ChevronRight />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                  background:
+                    'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                   borderRadius: '50px',
                   py: 1.5,
                   px: 3,
                   fontWeight: 'bold',
                   textTransform: 'none',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)'
-                  }
+                    background:
+                      'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                  },
                 }}
               >
                 Next
@@ -785,15 +894,18 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <TrendingUp sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark mb-3">Your offers</Typography>
+              <Typography variant="h3" className="fw-bold text-dark mb-3">
+                Your offers
+              </Typography>
               <Typography variant="body1" className="text-muted mb-3">
-                Let's talk about what you're actually selling now because that's what we'll be writing about.
+                Let's talk about what you're actually selling now because that's what
+                we'll be writing about.
               </Typography>
               <Box className="d-flex align-items-center justify-content-center">
                 <Bookmark sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
@@ -810,7 +922,9 @@ function Questions() {
                     <Box className="d-flex justify-content-between align-items-start mb-3">
                       <Box className="d-flex align-items-center">
                         <Star sx={{ fontSize: 20, color: '#8b5cf6', mr: 1 }} />
-                        <Typography variant="h6" className="fw-bold">Offer Details</Typography>
+                        <Typography variant="h6" className="fw-bold">
+                          Offer Details
+                        </Typography>
                       </Box>
                       <IconButton
                         onClick={() => removeOffer(offer.id)}
@@ -842,8 +956,8 @@ function Questions() {
                               borderRadius: 1,
                               backgroundColor: '#f8f9fa',
                               '&:hover': { backgroundColor: 'white' },
-                              '&.Mui-focused': { backgroundColor: 'white' }
-                            }
+                              '&.Mui-focused': { backgroundColor: 'white' },
+                            },
                           }}
                         />
                       </Box>
@@ -859,7 +973,9 @@ function Questions() {
                           {['one-time', 'monthly', 'subscription'].map(model => (
                             <Button
                               key={model}
-                              variant={offer.priceModel === model ? "contained" : "outlined"}
+                              variant={
+                                offer.priceModel === model ? 'contained' : 'outlined'
+                              }
                               onClick={() => updateOffer(offer.id, 'priceModel', model)}
                               size="small"
                               sx={{
@@ -867,13 +983,14 @@ function Questions() {
                                 textTransform: 'none',
                                 ...(offer.priceModel === model
                                   ? {
-                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                                    color: 'white'
-                                  }
+                                      background:
+                                        'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                                      color: 'white',
+                                    }
                                   : {
-                                    borderColor: '#8b5cf6',
-                                    color: '#8b5cf6'
-                                  })
+                                      borderColor: '#8b5cf6',
+                                      color: '#8b5cf6',
+                                    }),
                               }}
                             >
                               {model.charAt(0).toUpperCase() + model.slice(1)}
@@ -881,7 +998,9 @@ function Questions() {
                           ))}
                         </Box>
                         {errors[`offer_priceModel_${offer.id}`] && (
-                          <Typography color="error" variant="caption">{errors[`offer_priceModel_${offer.id}`]}</Typography>
+                          <Typography color="error" variant="caption">
+                            {errors[`offer_priceModel_${offer.id}`]}
+                          </Typography>
                         )}
                       </Box>
 
@@ -897,7 +1016,9 @@ function Questions() {
                           required
                           variant="outlined"
                           value={offer.transformation}
-                          onChange={e => updateOffer(offer.id, 'transformation', e.target.value)}
+                          onChange={e =>
+                            updateOffer(offer.id, 'transformation', e.target.value)
+                          }
                           placeholder="Keep it clear and measurable"
                           error={!!errors[`offer_transformation_${offer.id}`]}
                           helperText={errors[`offer_transformation_${offer.id}`]}
@@ -906,8 +1027,8 @@ function Questions() {
                               borderRadius: 1,
                               backgroundColor: '#f8f9fa',
                               '&:hover': { backgroundColor: 'white' },
-                              '&.Mui-focused': { backgroundColor: 'white' }
-                            }
+                              '&.Mui-focused': { backgroundColor: 'white' },
+                            },
                           }}
                         />
                       </Box>
@@ -956,15 +1077,17 @@ function Questions() {
                 onClick={handleNext}
                 endIcon={<ChevronRight />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                  background:
+                    'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                   borderRadius: '50px',
                   py: 1.5,
                   px: 3,
                   fontWeight: 'bold',
                   textTransform: 'none',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)'
-                  }
+                    background:
+                      'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                  },
                 }}
               >
                 {formData.offers.length > 0 ? 'Done' : 'Skip for now'}
@@ -986,15 +1109,18 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <Message sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark mb-3">Pick your voice</Typography>
+              <Typography variant="h3" className="fw-bold text-dark mb-3">
+                Pick your voice
+              </Typography>
               <Typography variant="body1" className="text-muted">
-                Let's make sure your content sounds like you instead of like a robot with an MBA that uses too many m dashes and "the best part?" (hehehe).
+                Let's make sure your content sounds like you instead of like a robot with
+                an MBA that uses too many m dashes and "the best part?" (hehehe).
               </Typography>
             </Box>
 
@@ -1015,7 +1141,9 @@ function Questions() {
                 {voiceOptions.map(voice => (
                   <Grid item xs={6} md={4} key={voice.text}>
                     <Button
-                      variant={formData.voiceTone.includes(voice.text) ? "contained" : "outlined"}
+                      variant={
+                        formData.voiceTone.includes(voice.text) ? 'contained' : 'outlined'
+                      }
                       onClick={() => handleMultiSelect('voiceTone', voice.text, 3)}
                       startIcon={voice.icon}
                       endIcon={formData.voiceTone.includes(voice.text) ? <Check /> : null}
@@ -1026,16 +1154,18 @@ function Questions() {
                         textTransform: 'none',
                         ...(formData.voiceTone.includes(voice.text)
                           ? {
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                            color: 'white',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)'
+                              background:
+                                'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                              color: 'white',
+                              '&:hover': {
+                                background:
+                                  'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
+                              },
                             }
-                          }
                           : {
-                            borderColor: '#8b5cf6',
-                            color: '#8b5cf6',
-                          })
+                              borderColor: '#8b5cf6',
+                              color: '#8b5cf6',
+                            }),
                       }}
                     >
                       {voice.text}
@@ -1044,7 +1174,9 @@ function Questions() {
                 ))}
               </Grid>
               {errors.voiceTone && (
-                <Typography color="error" variant="caption" sx={{ mt: 1 }}>{errors.voiceTone}</Typography>
+                <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+                  {errors.voiceTone}
+                </Typography>
               )}
               <Box className="d-flex align-items-center mt-2">
                 <Star sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
@@ -1064,14 +1196,15 @@ function Questions() {
               <Box className="d-flex align-items-center mb-3">
                 <Edit sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                 <Typography variant="body2" className="text-muted">
-                  It'll be medium to long unless you tell me otherwise later. You can always edit it.
+                  It'll be medium to long unless you tell me otherwise later. You can
+                  always edit it.
                 </Typography>
               </Box>
               <Box className="d-flex gap-2">
                 {['short', 'medium', 'long'].map(length => (
                   <Button
                     key={length}
-                    variant={formData.postLength === length ? "contained" : "outlined"}
+                    variant={formData.postLength === length ? 'contained' : 'outlined'}
                     onClick={() => setFormData({ ...formData, postLength: length })}
                     sx={{
                       borderRadius: '50px',
@@ -1080,13 +1213,14 @@ function Questions() {
                       textTransform: 'none',
                       ...(formData.postLength === length
                         ? {
-                          background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                          color: 'white'
-                        }
+                            background:
+                              'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                            color: 'white',
+                          }
                         : {
-                          borderColor: '#8b5cf6',
-                          color: '#8b5cf6'
-                        })
+                            borderColor: '#8b5cf6',
+                            color: '#8b5cf6',
+                          }),
                     }}
                   >
                     {length.charAt(0).toUpperCase() + length.slice(1)}
@@ -1117,15 +1251,17 @@ function Questions() {
                 onClick={handleNext}
                 endIcon={<ChevronRight />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                  background:
+                    'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                   borderRadius: '50px',
                   py: 1.5,
                   px: 3,
                   fontWeight: 'bold',
                   textTransform: 'none',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)'
-                  }
+                    background:
+                      'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                  },
                 }}
               >
                 Next
@@ -1147,15 +1283,18 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <EmojiEvents sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark mb-3">Key Stories and Humble Brags</Typography>
+              <Typography variant="h3" className="fw-bold text-dark mb-3">
+                Key Stories and Humble Brags
+              </Typography>
               <Typography variant="body1" className="text-muted mb-3">
-                Now let's get to the good stuff. I want all the stories, the magic, the receipts.
+                Now let's get to the good stuff. I want all the stories, the magic, the
+                receipts.
               </Typography>
               <Box className="d-flex align-items-center justify-content-center">
                 <Favorite sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
@@ -1180,7 +1319,9 @@ function Questions() {
                   rows={4}
                   variant="outlined"
                   value={formData.originStory}
-                  onChange={e => setFormData({ ...formData, originStory: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, originStory: e.target.value })
+                  }
                   placeholder="Tell your origin story..."
                   error={!!errors.originStory}
                   helperText={errors.originStory}
@@ -1189,8 +1330,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -1205,7 +1346,8 @@ function Questions() {
                 <Box className="d-flex align-items-center mb-2">
                   <People sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                   <Typography variant="body2" className="text-muted">
-                    Before or after you started your business that your audience could relate to or cheer for you about?
+                    Before or after you started your business that your audience could
+                    relate to or cheer for you about?
                   </Typography>
                 </Box>
                 <TextField
@@ -1224,8 +1366,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -1238,17 +1380,27 @@ function Questions() {
                   </Typography>
                 </Box>
                 <Box className="mb-2">
-                  <Typography variant="body2" className="text-muted d-flex align-items-center mb-1">
+                  <Typography
+                    variant="body2"
+                    className="text-muted d-flex align-items-center mb-1"
+                  >
                     <EmojiEvents sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                     Think: Awards, Wild sales numbers, Podcasts, press, TEDx talks
                   </Typography>
-                  <Typography variant="body2" className="text-muted d-flex align-items-center mb-1">
+                  <Typography
+                    variant="body2"
+                    className="text-muted d-flex align-items-center mb-1"
+                  >
                     <People sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
                     Big partnerships or dream clients, "holy sh*t" moments, Press
                   </Typography>
-                  <Typography variant="body2" className="text-muted d-flex align-items-center">
+                  <Typography
+                    variant="body2"
+                    className="text-muted d-flex align-items-center"
+                  >
                     <ThumbUp sx={{ fontSize: 16, color: '#6c757d', mr: 1 }} />
-                    Don't hold back. This is how we build trust, and create content that actually lands.
+                    Don't hold back. This is how we build trust, and create content that
+                    actually lands.
                   </Typography>
                 </Box>
                 <TextField
@@ -1267,8 +1419,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -1293,7 +1445,9 @@ function Questions() {
                   rows={5}
                   variant="outlined"
                   value={formData.testimonials}
-                  onChange={e => setFormData({ ...formData, testimonials: e.target.value })}
+                  onChange={e =>
+                    setFormData({ ...formData, testimonials: e.target.value })
+                  }
                   placeholder="Paste your testimonials here, one per line or separated by paragraphs..."
                   error={!!errors.testimonials}
                   helperText={errors.testimonials}
@@ -1302,8 +1456,8 @@ function Questions() {
                       borderRadius: 2,
                       backgroundColor: '#f8f9fa',
                       '&:hover': { backgroundColor: 'white' },
-                      '&.Mui-focused': { backgroundColor: 'white' }
-                    }
+                      '&.Mui-focused': { backgroundColor: 'white' },
+                    },
                   }}
                 />
               </Box>
@@ -1331,15 +1485,17 @@ function Questions() {
                 onClick={handleNext}
                 endIcon={<ChevronRight />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                  background:
+                    'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                   borderRadius: '50px',
                   py: 1.5,
                   px: 3,
                   fontWeight: 'bold',
                   textTransform: 'none',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)'
-                  }
+                    background:
+                      'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                  },
                 }}
               >
                 Next
@@ -1361,15 +1517,18 @@ function Questions() {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                   }}
                 >
                   <Link sx={{ fontSize: 32, color: 'white' }} />
                 </Box>
               </Box>
-              <Typography variant="h3" className="fw-bold text-dark mb-3">Media and Connections</Typography>
+              <Typography variant="h3" className="fw-bold text-dark mb-3">
+                Media and Connections
+              </Typography>
               <Typography variant="body1" className="text-muted">
-                You'll be able to link up the tools you already use so content creation feels even more seamless.
+                You'll be able to link up the tools you already use so content creation
+                feels even more seamless.
               </Typography>
             </Box>
 
@@ -1391,8 +1550,8 @@ function Questions() {
                         sx={{
                           color: '#8b5cf6',
                           '&.Mui-checked': {
-                            color: '#8b5cf6'
-                          }
+                            color: '#8b5cf6',
+                          },
                         }}
                       />
                     }
@@ -1406,7 +1565,7 @@ function Questions() {
                             mr: 2,
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
                           }}
                         >
                           {option.icon}
@@ -1436,12 +1595,14 @@ function Questions() {
                 control={
                   <Checkbox
                     checked={formData.consent}
-                    onChange={e => setFormData({ ...formData, consent: e.target.checked })}
+                    onChange={e =>
+                      setFormData({ ...formData, consent: e.target.checked })
+                    }
                     sx={{
                       color: '#8b5cf6',
                       '&.Mui-checked': {
-                        color: '#8b5cf6'
-                      }
+                        color: '#8b5cf6',
+                      },
                     }}
                   />
                 }
@@ -1451,7 +1612,7 @@ function Questions() {
                   padding: 2,
                   border: '2px solid #e9ecef',
                   borderRadius: 2,
-                  width: '100%'
+                  width: '100%',
                 }}
               />
             </Box>
@@ -1476,7 +1637,9 @@ function Questions() {
                 rows={3}
                 variant="outlined"
                 value={formData.additionalFeatures}
-                onChange={e => setFormData({ ...formData, additionalFeatures: e.target.value })}
+                onChange={e =>
+                  setFormData({ ...formData, additionalFeatures: e.target.value })
+                }
                 placeholder="What features would you love to see?"
                 error={!!errors.additionalFeatures}
                 helperText={errors.additionalFeatures}
@@ -1485,8 +1648,8 @@ function Questions() {
                     borderRadius: 2,
                     backgroundColor: '#f8f9fa',
                     '&:hover': { backgroundColor: 'white' },
-                    '&.Mui-focused': { backgroundColor: 'white' }
-                  }
+                    '&.Mui-focused': { backgroundColor: 'white' },
+                  },
                 }}
               />
             </Box>
@@ -1515,16 +1678,17 @@ function Questions() {
                   const output = generateOutput();
                   const resp = await submitQuestion(output).unwrap();
                   console.log(resp?.message);
-                  
+
                   if (resp?.message) {
                     dispatch(updateUserDetail({ has_answered: true }));
-                    navigate("/");
+                    navigate('/');
                   }
                 }}
                 startIcon={<Favorite />}
                 endIcon={<Check />}
                 sx={{
-                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                  background:
+                    'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
                   borderRadius: '50px',
                   py: 2,
                   px: 4,
@@ -1532,9 +1696,10 @@ function Questions() {
                   textTransform: 'none',
                   boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
-                    transform: 'scale(1.05)'
-                  }
+                    background:
+                      'linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%)',
+                    transform: 'scale(1.05)',
+                  },
                 }}
               >
                 {isLoading ? 'submitting...' : 'Finish Setup'}
@@ -1549,10 +1714,12 @@ function Questions() {
   };
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%)'
-    }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%)',
+      }}
+    >
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box className="mb-4">
           <Box className="d-flex justify-content-between align-items-center mb-3">
@@ -1574,9 +1741,10 @@ function Questions() {
               borderRadius: 6,
               backgroundColor: '#e9ecef',
               '& .MuiLinearProgress-bar': {
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
-                borderRadius: 6
-              }
+                background:
+                  'linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%)',
+                borderRadius: 6,
+              },
             }}
           />
         </Box>
@@ -1588,7 +1756,7 @@ function Questions() {
               borderRadius: 6,
               p: { xs: 4, md: 6 },
               backgroundColor: 'white',
-              border: '1px solid #e9ecef'
+              border: '1px solid #e9ecef',
             }}
           >
             {renderStep()}

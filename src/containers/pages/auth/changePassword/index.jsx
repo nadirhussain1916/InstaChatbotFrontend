@@ -25,12 +25,12 @@ import { useNavigate } from 'react-router-dom';
 import image from '@assets/image.jpg'
 
 const initialValues = {
-  current_password: '',
+  username: '',
   new_password: '',
 };
 
 const validationSchema = Yup.object({
-  current_password: Yup.string().required('Old Password is required'),
+  username: Yup.string().required('Old Password is required'),
   new_password: Yup.string().required('New Password is required'),
 });
 
@@ -127,7 +127,7 @@ function ChangePassword() {
               <Form style={{ width: '100%', maxWidth: 400 }}>
                 <TextField
                   fullWidth
-                  placeholder="Enter Old Password"
+                  placeholder="Enter user name "
                   name="username"
                   type='text'
                   value={values.username}
