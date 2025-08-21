@@ -24,12 +24,14 @@ import useAuth from "@/hooks/useAuth";
 import { useAuthorizedQuery } from "@/services/private/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { truncateUserName } from "@/utilities/helpers";
+import { useNavigate } from "react-router-dom";
 
 function EditPromptsForm() {
       const theme = useTheme();
       const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
      const { anchorEl,} = useSelector(state => state.chat);
      const dispatch = useDispatch();
+     const navigate = useNavigate();
      const openMenu = Boolean(anchorEl);
       const handleAvatarClick = e => dispatch(setAnchorEl(e.currentTarget));
       const { handleLogout } = useAuth();
@@ -216,7 +218,7 @@ function EditPromptsForm() {
                   <Button variant="contained" color="primary" type="submit">
                       {isLoading ? 'Submiting..' : 'Save Changes'}
                   </Button>
-                  <Button variant="contained" color="primary" onClick={Navigate('/')}>
+                  <Button variant="contained" color="primary" onClick={navigate('/')}>
                       Back to home Page
                   </Button>
                   </Box>
