@@ -212,10 +212,14 @@ function EditPromptsForm() {
                           color="primary" />}
                       label="Active"
                       sx={{ mb: 3 }} />
-
+                  <Box className='d-flex items-center gap-2'>
                   <Button variant="contained" color="primary" type="submit">
                       {isLoading ? 'Submiting..' : 'Save Changes'}
                   </Button>
+                  <Button variant="contained" color="primary" onClick={Navigate('/')}>
+                      Back to home Page
+                  </Button>
+                  </Box>
               </form>
           </Paper></>
   );

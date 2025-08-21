@@ -59,6 +59,8 @@ import {
   Schedule,
   Bookmark,
   ThumbUp,
+  AddToDrive,
+  Apple,
   Person,
   Business,
 } from '@mui/icons-material';
@@ -135,20 +137,16 @@ function Questions() {
 
   const connectionOptions = [
     {
-      text: 'Your photo album (so I can suggest visuals that match your post)',
+      text: 'Connect with Google Drive',
+      icon: <AddToDrive />,
+    },
+    {
+      text: 'Connect with Apple Drive',
+      icon: <Apple />,
+    },
+    {
+      text: 'Connect with Canva',
       icon: <Image />,
-    },
-    {
-      text: 'Canva (for designing carousels and Reels covers without the guesswork)',
-      icon: <Edit />,
-    },
-    {
-      text: 'Your scheduler (Later, Metricool you pick and LMK if you want my affiliate link)',
-      icon: <Event />,
-    },
-    {
-      text: 'Your calendar (Google, Notion, ClickUp — whatever you live inside)',
-      icon: <Schedule />,
     },
   ];
 
@@ -183,6 +181,9 @@ function Questions() {
       case 5:
         if (!formData.voiceTone.length)
           stepErrors.voiceTone = 'Select at least one voice tone';
+        if (!formData.price) {
+          stepErrors.price = 'Select price';
+        }
         break;
       case 6:
         if (!formData.originStory.trim())
@@ -331,6 +332,7 @@ function Questions() {
       { question: 'Consent', answer: formData.consent ? 'Yes' : 'No' },
       { question: 'Additional Features', answer: formData.additionalFeatures },
       { question: 'website url', answer: formData.weburl },
+      { question: 'Enter your price', answer: formData.price },
     ];
 
     const form = new FormData();
@@ -824,7 +826,7 @@ function Questions() {
                 {formData.website && formData.website.length > 0 && (
                   <Box sx={{ mt: 1 }}>
                     {formData.website.map((file, index) => (
-                      <Typography key={index} variant="body2" color='black'>
+                      <Typography key={index} variant="body2" color="black">
                         📄 {file.name}
                       </Typography>
                     ))}
@@ -1228,6 +1230,33 @@ function Questions() {
                 ))}
               </Box>
             </Box>
+            <Box className="mb-4">
+              <Box className="d-flex align-items-center mb-3">
+                <MenuBook sx={{ fontSize: 20, color: '#8b5cf6', mr: 1 }} />
+                <Typography variant="h6" className="fw-medium">
+                  Add your price
+                </Typography>
+              </Box>
+              <TextField
+                fullWidth
+                type="number"
+                required
+                variant="outlined"
+                value={formData.price}
+                onChange={e => setFormData({ ...formData, price: e.target.value })}
+                placeholder="Enter your price"
+                error={!!errors.price}
+                helperText={errors.price}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    backgroundColor: '#f8f9fa',
+                    '&:hover': { backgroundColor: 'white' },
+                    '&.Mui-focused': { backgroundColor: 'white' },
+                  },
+                }}
+              />
+            </Box>
 
             <Box className="d-flex justify-content-between">
               <Button
@@ -1570,7 +1599,9 @@ function Questions() {
                         >
                           {option.icon}
                         </Box>
-                        <Typography variant="body2">{option.text}</Typography>
+                        <Typography variant="body2" color="black">
+                          {option.text}
+                        </Typography>
                       </Box>
                     }
                     sx={{

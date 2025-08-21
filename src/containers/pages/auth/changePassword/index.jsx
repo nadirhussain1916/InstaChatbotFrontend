@@ -26,12 +26,12 @@ import image from '@assets/image.jpg'
 
 const initialValues = {
   username: '',
-  new_password: '',
+  password: '',
 };
 
 const validationSchema = Yup.object({
   username: Yup.string().required('Old Password is required'),
-  new_password: Yup.string().required('New Password is required'),
+  password: Yup.string().required('New Password is required'),
 });
 
 function ChangePassword() {
@@ -152,7 +152,7 @@ function ChangePassword() {
                 <TextField
                   fullWidth
                   placeholder="Add New Password"
-                  name="new_password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={values.password}
                   onChange={handleChange}

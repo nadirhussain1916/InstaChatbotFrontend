@@ -11,7 +11,7 @@ export const authAPI = publicAPI.injectEndpoints({
     }),
      changePassword: build.mutation({
       query: body => ({
-        url: 'instagram/change-password/',
+        url: 'instagram/reset-password/',
         method: 'POST',
         body,
       }),
