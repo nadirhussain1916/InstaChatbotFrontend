@@ -36,7 +36,7 @@ const validationSchema = Yup.object({
 
 function ChangePassword() {
   const [showPassword, setShowPassword] = useState(false);
-  const [changePassword] = useChangePasswordMutation();
+  const [changePassword, {isLoading}] = useChangePasswordMutation();
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,11 +46,11 @@ function ChangePassword() {
     setLoading(true);
 
     const changePasswordResp = await changePassword({ ...values });
+    console.log(changePasswordResp);
+    
 
-    if (changePasswordResp?.data) {
-      if (data) {
+    if (changePasswordResp?.data) {    
         navigate('/auth/login');
-      }
       onClose();
     } else {
       setError('Try Again');
@@ -122,7 +122,6 @@ function ChangePassword() {
               handleBlur,
               touched,
               errors,
-              isSubmitting,
             }) => (
               <Form style={{ width: '100%', maxWidth: 400 }}>
                 <TextField
@@ -198,7 +197,7 @@ function ChangePassword() {
                   size="large"
                   variant="contained"
                   type="submit"
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading}
                   sx={{
                     mb: 2,
                     background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',
@@ -208,7 +207,7 @@ function ChangePassword() {
                   }}
 
                 >
-                  {isSubmitting || loading ? (
+                  {isLoading ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CircularProgress size={20} color="inherit" />
                       Submitting...
@@ -222,7 +221,7 @@ function ChangePassword() {
                   size="large"
                   variant="contained"
                   type="submit"
-                  disabled={loading || isSubmitting}
+                  disabled={isLoading}
                   sx={{
                     mb: 2,
                     background: 'linear-gradient(to right, #a855f7, #ec4899, #fb923c)',

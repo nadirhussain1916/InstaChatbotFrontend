@@ -309,7 +309,10 @@ function Chat() {
             </MenuItem>
             {data?.role === 'admin' && (
               <MenuItem
-                onClick={() => navigate('/edit-prompts')}
+                onClick={() => {
+                  handleMenuClose();
+                  navigate('/edit-prompts');
+                }}
                 sx={{
                   color: '#090040',
                   '&:hover': {

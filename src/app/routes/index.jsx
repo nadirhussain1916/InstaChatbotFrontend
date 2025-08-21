@@ -10,6 +10,7 @@ import Question from '@/containers/pages/questions';
 import SignUp from '@/containers/pages/auth/signup';
 import ChangePassword from '@/containers/pages/auth/changePassword';
 import EditPromptsForm from '@/containers/pages/admin';
+
 // LAZY LOAD
 const Login = lazy(() => import('@containers/pages/auth/login'));
 
